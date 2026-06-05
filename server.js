@@ -6,9 +6,13 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 
+// Uploads path
+const uploadsPath = process.env.UPLOADS_PATH || path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
+
 // Multer config
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, 'public', 'uploads'),
+  destination: uploadsPath,
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     cb(null, `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`);
@@ -52,11 +56,69 @@ process.on('unhandledRejection', (reason) => {
 });
 
 // DB
-const db = new Database(path.join(__dirname, 'database.db'));
+const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'database.db');
+const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
+
+// Create tables if not exist
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    icon TEXT
+  );
+  CREATE TABLE IF NOT EXISTS articles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    description TEXT,
+    thumbnail_url TEXT,
+    content TEXT NOT NULL,
+    category_slug TEXT NOT NULL,
+    author TEXT DEFAULT 'Maverick Dev',
+    published INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (category_slug) REFERENCES categories(slug)
+  );
+  CREATE TABLE IF NOT EXISTS images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    article_slug TEXT,
+    url TEXT NOT NULL,
+    filename TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+`);
+
+// Migrate: add thumbnail_url if missing
+try { db.exec('ALTER TABLE articles ADD COLUMN thumbnail_url TEXT'); } catch {}
+
+// Auto-seed: admin user + categories if empty
+if (!db.prepare('SELECT id FROM users LIMIT 1').get()) {
+  const hash = bcrypt.hashSync('admin123', 10);
+  db.prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)').run('admin', hash);
+  console.log('[seed] Admin user created');
+}
+if (!db.prepare('SELECT id FROM categories LIMIT 1').get()) {
+  const cats = [
+    ['Web','web','🌐'],['Back-end','back-end','⚙️'],['Banco de Dados','banco-de-dados','🗃️'],
+    ['Ferramentas','ferramentas','🔧'],['Projetos','projetos','🚀'],['Carreira','carreira','💡'],
+    ['Tutoriais','tutoriais','📝'],['Arquivo','arquivo','📂']
+  ];
+  const ins = db.prepare('INSERT INTO categories (name, slug, icon) VALUES (?, ?, ?)');
+  cats.forEach(c => ins.run(...c));
+  console.log('[seed] 8 categories created');
+}
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(uploadsPath));
 
 // === AUTH ===
 function authMiddleware(req, res, next) {
@@ -94,7 +156,7 @@ app.get('/api/categories', (req, res) => {
 // === ARTIGOS ===
 app.get('/api/articles', (req, res) => {
   const { category, limit, offset, showAll } = req.query;
-  let sql = 'SELECT id, title, slug, description, category_slug, author, created_at, updated_at, published FROM articles';
+  let sql = 'SELECT id, title, slug, description, thumbnail_url, category_slug, author, created_at, updated_at, published FROM articles';
   const conditions = [];
   const params = [];
   if (!showAll) { conditions.push('published = 1'); }
@@ -113,10 +175,10 @@ app.get('/api/articles/:slug', (req, res) => {
 });
 
 app.post('/api/articles', authMiddleware, (req, res) => {
-  const { title, slug, description, content, category_slug, author } = req.body;
+  const { title, slug, description, content, category_slug, author, thumbnail_url } = req.body;
   if (!title || !slug || !content || !category_slug) return res.status(400).json({ error: 'Campos obrigatórios: title, slug, content, category_slug' });
   try {
-    const result = db.prepare("INSERT INTO articles (title, slug, description, content, category_slug, author, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))").run(title, slug, description || '', content, category_slug, author || 'Maverick Dev');
+    const result = db.prepare("INSERT INTO articles (title, slug, description, thumbnail_url, content, category_slug, author, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))").run(title, slug, description || '', thumbnail_url || null, content, category_slug, author || 'Maverick Dev');
     res.status(201).json({ id: result.lastInsertRowid, slug });
   } catch (e) {
     if (e.message.includes('UNIQUE')) res.status(409).json({ error: 'Slug já existe' });
@@ -125,17 +187,17 @@ app.post('/api/articles', authMiddleware, (req, res) => {
 });
 
 app.put('/api/articles/:slug', authMiddleware, (req, res) => {
-  const { title, description, content, category_slug } = req.body;
+  const { title, description, content, category_slug, thumbnail_url } = req.body;
   const existing = db.prepare('SELECT id FROM articles WHERE slug = ?').get(req.params.slug);
   if (!existing) return res.status(404).json({ error: 'Artigo não encontrado' });
-  db.prepare("UPDATE articles SET title = COALESCE(?, title), description = COALESCE(?, description), content = COALESCE(?, content), category_slug = COALESCE(?, category_slug), updated_at = datetime('now') WHERE slug = ?").run(title || null, description || null, content || null, category_slug || null, req.params.slug);
+  db.prepare("UPDATE articles SET title = COALESCE(?, title), description = COALESCE(?, description), content = COALESCE(?, content), category_slug = COALESCE(?, category_slug), thumbnail_url = COALESCE(?, thumbnail_url), updated_at = datetime('now') WHERE slug = ?").run(title || null, description || null, content || null, category_slug || null, thumbnail_url !== undefined ? thumbnail_url : null, req.params.slug);
   res.json({ success: true });
 });
 
 app.delete('/api/articles/:slug', authMiddleware, (req, res) => {
   const images = db.prepare('SELECT * FROM images WHERE article_slug = ?').all(req.params.slug);
   for (const img of images) {
-    const filePath = path.join(__dirname, 'public', 'uploads', img.filename);
+    const filePath = path.join(uploadsPath, img.filename);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
   db.prepare('DELETE FROM images WHERE article_slug = ?').run(req.params.slug);
@@ -165,7 +227,7 @@ app.get('/api/images', authMiddleware, (req, res) => {
 app.delete('/api/images/:id', authMiddleware, (req, res) => {
   const img = db.prepare('SELECT * FROM images WHERE id = ?').get(req.params.id);
   if (!img) return res.status(404).json({ error: 'Imagem não encontrada' });
-  const filePath = path.join(__dirname, 'public', 'uploads', img.filename);
+  const filePath = path.join(uploadsPath, img.filename);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   db.prepare('DELETE FROM images WHERE id = ?').run(req.params.id);
   res.json({ success: true });
