@@ -204,7 +204,7 @@
             gallery.innerHTML = images.length === 0 ? '<p style="color:var(--text-secondary);font-size:0.85rem;margin:8px;">Nenhuma imagem ainda.</p>' :
                 images.map(img => `
                 <div style="position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--border);">
-                    <img src="${img.url}" style="width:100px;height:100px;object-fit:cover;display:block;">
+                    <img src="${img.url}" onclick="insertImage('${img.url}','${img.filename}')" style="width:100px;height:100px;object-fit:cover;display:block;cursor:pointer;" title="Clique para inserir">
                     <div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:2px;">
                         <button onclick="insertImage('${img.url}','${img.filename}')" style="flex:1;padding:3px;font-size:0.7rem;background:#7c3aed;color:#fff;border:none;cursor:pointer;">Inserir</button>
                         <button onclick="deleteImage(${img.id},'${img.url}')" style="flex:1;padding:3px;font-size:0.7rem;background:#dc2626;color:#fff;border:none;cursor:pointer;">Excluir</button>
