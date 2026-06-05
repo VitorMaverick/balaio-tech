@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carreira — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body data-category="carreira">
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="/" class="nav-link">← Início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="category-page">
+        <div class="container">
+            <div class="categories-grid">
+      <a href="/technologies/web/" class="category-card">
+        <span class="category-icon">🌐</span>
+        <span>Web</span>
+      </a>
+      <a href="/technologies/back-end/" class="category-card">
+        <span class="category-icon">⚙️</span>
+        <span>Back-end</span>
+      </a>
+      <a href="/technologies/banco-de-dados/" class="category-card">
+        <span class="category-icon">🗃️</span>
+        <span>Banco de Dados</span>
+      </a>
+      <a href="/technologies/ferramentas/" class="category-card">
+        <span class="category-icon">🔧</span>
+        <span>Ferramentas</span>
+      </a>
+      <a href="/technologies/projetos/" class="category-card">
+        <span class="category-icon">🚀</span>
+        <span>Projetos</span>
+      </a>
+      <a href="/technologies/carreira/" class="category-card active">
+        <span class="category-icon">💡</span>
+        <span>Carreira</span>
+      </a>
+      <a href="/technologies/tutoriais/" class="category-card">
+        <span class="category-icon">📝</span>
+        <span>Tutoriais</span>
+      </a>
+      <a href="/technologies/arquivo/" class="category-card">
+        <span class="category-icon">📂</span>
+        <span>Arquivo</span>
+      </a>
+            </div>
+            <div class="category-header">
+                <h1 class="category-title"><span>💡</span> Carreira</h1>
+                <p class="category-desc">Vida de estudante, dicas, reflexões e soft skills.</p>
+            </div>
+            <div class="article-search">
+                <div class="article-search-box">
+                    <span class="article-search-icon">🔍</span>
+                    <input type="search" class="article-search-input" placeholder="Buscar artigo pelo título..." aria-label="Buscar artigo" autocomplete="off">
+                    <button type="button" class="article-search-clear" aria-label="Limpar busca" hidden>×</button>
+                </div>
+                <p class="article-search-empty" hidden>Nenhum artigo encontrado.</p>
+            </div>
+            <div class="articles-grid" id="articles-grid"></div>
+        </div>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+    <script src="/assets/js/article-search.js"></script>
+    <script>
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    </script>
+</body>
+</html>

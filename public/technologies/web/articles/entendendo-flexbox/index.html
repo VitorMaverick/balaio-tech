@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entendendo Flexbox de uma vez por todas — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/main.css">
+    <link rel="stylesheet" href="../../../../assets/css/responsive.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="../../../../index.html" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="../../../../index.html" class="nav-link">← Voltar ao início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="article-page">
+        <article class="article-container">
+            <div class="article-header">
+                <span class="article-category">Web</span>
+                <h1 class="article-title">Entendendo Flexbox de uma vez por todas</h1>
+                <p class="article-meta">Por Maverick Dev • 1 de dezembro de 2024</p>
+            </div>
+            <div class="article-cover">Web</div>
+            <div class="article-content">
+                <h2>Por que Flexbox?</h2>
+
+                <p>Se você já tentou colocar dois elementos lado a lado no CSS e tudo desandou, bem-vindo ao clube. Antes do Flexbox, a gente usava float, inline-block, position absolute — tudo gambiarra. Funcionava, mas era sofrido.</p>
+
+                <p>Flexbox (Flexible Box Layout) surgiu pra resolver exatamente isso: organizar elementos em uma direção (linha ou coluna) de forma previsível e flexível. Depois que você entende como funciona, nunca mais vai querer voltar pros métodos antigos.</p>
+
+                <p>Vou explicar do zero, com exemplos práticos. Ao final desse artigo, você vai saber posicionar qualquer coisa com Flexbox.</p>
+
+                <h2>O conceito fundamental: container e items</h2>
+
+                <p>Flexbox trabalha com dois papéis: o <strong>flex container</strong> (pai) e os <strong>flex items</strong> (filhos). Você ativa o Flexbox no elemento pai, e os filhos diretos se tornam os items flexíveis.</p>
+
+                <pre><code>&lt;div class="container"&gt;
+    &lt;div class="item"&gt;1&lt;/div&gt;
+    &lt;div class="item"&gt;2&lt;/div&gt;
+    &lt;div class="item"&gt;3&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+                <pre><code>.container {
+    display: flex;
+}</code></pre>
+
+                <p>Só isso. Com essa única linha, os três items que antes ficavam empilhados (um embaixo do outro) agora ficam lado a lado. Mágico? Quase.</p>
+
+                <h2>Os dois eixos: principal e cruzado</h2>
+
+                <p>Esse é o conceito mais importante do Flexbox. Tudo gira em torno de dois eixos:</p>
+
+                <ul>
+                    <li><strong>Eixo principal (main axis):</strong> a direção em que os items são distribuídos. Por padrão, é horizontal (da esquerda pra direita).</li>
+                    <li><strong>Eixo cruzado (cross axis):</strong> perpendicular ao eixo principal. Por padrão, é vertical (de cima pra baixo).</li>
+                </ul>
+
+                <p>Por que isso importa? Porque as propriedades de alinhamento funcionam em relação a esses eixos. <code>justify-content</code> alinha no eixo principal. <code>align-items</code> alinha no eixo cruzado. Se você confunde os dois, o resultado não é o que espera.</p>
+
+                <h2>flex-direction: mudando o eixo principal</h2>
+
+                <p>Por padrão, o eixo principal é horizontal. Mas você pode mudar com <code>flex-direction</code>:</p>
+
+                <pre><code>.container {
+    display: flex;
+    flex-direction: row;         /* padrão: horizontal */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;      /* vertical: items empilhados */
+}
+
+.container {
+    display: flex;
+    flex-direction: row-reverse; /* horizontal invertido */
+}
+
+.container {
+    display: flex;
+    flex-direction: column-reverse; /* vertical invertido */
+}</code></pre>
+
+                <p>Quando você usa <code>column</code>, os eixos se invertem: o principal vira vertical e o cruzado vira horizontal. Isso pega muita gente de surpresa. Se o <code>justify-content</code> não está funcionando como você espera, confere a <code>flex-direction</code> — provavelmente os eixos estão trocados.</p>
+
+                <h2>justify-content: alinhamento no eixo principal</h2>
+
+                <p>Essa propriedade controla como os items se distribuem ao longo do eixo principal. Os valores mais usados:</p>
+
+                <pre><code>.container {
+    display: flex;
+    justify-content: flex-start;    /* items no início (padrão) */
+}
+
+.container {
+    display: flex;
+    justify-content: flex-end;      /* items no final */
+}
+
+.container {
+    display: flex;
+    justify-content: center;        /* items centralizados */
+}
+
+.container {
+    display: flex;
+    justify-content: space-between; /* espaço igual ENTRE os items */
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;  /* espaço igual AO REDOR dos items */
+}
+
+.container {
+    display: flex;
+    justify-content: space-evenly;  /* espaço IGUAL em tudo */
+}</code></pre>
+
+                <p>O <code>space-between</code> é meu favorito. Ele joga o primeiro item pro início, o último pro final, e distribui o espaço igualmente entre os do meio. Perfeito pra navbars, por exemplo: logo na esquerda, menu na direita.</p>
+
+                <pre><code>.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+/* Logo fica na esquerda, nav fica na direita, automaticamente */</code></pre>
+
+                <h2>align-items: alinhamento no eixo cruzado</h2>
+
+                <p>Enquanto <code>justify-content</code> cuida do eixo principal, <code>align-items</code> cuida do eixo cruzado. Os valores:</p>
+
+                <pre><code>.container {
+    display: flex;
+    align-items: stretch;     /* items esticam pra ocupar toda a altura (padrão) */
+}
+
+.container {
+    display: flex;
+    align-items: flex-start;  /* items no topo */
+}
+
+.container {
+    display: flex;
+    align-items: flex-end;    /* items na base */
+}
+
+.container {
+    display: flex;
+    align-items: center;      /* items centralizados verticalmente */
+}
+
+.container {
+    display: flex;
+    align-items: baseline;    /* alinha pela linha base do texto */
+}</code></pre>
+
+                <p>O combo mais famoso do CSS — centralizar algo vertical e horizontalmente — fica ridiculamente simples:</p>
+
+                <pre><code>.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* precisa ter altura definida */
+}</code></pre>
+
+                <p>Três linhas (quatro com o height). Antes do Flexbox, isso era um pesadelo. Sério, pesquisa "how to center a div" e vê quantas soluções malucas existiam antes.</p>
+
+                <h2>flex-wrap: permitir quebra de linha</h2>
+
+                <p>Por padrão, os flex items tentam caber todos em uma linha, mesmo que isso signifique esmagar cada um. Se você quer que eles quebrem pra próxima linha quando não couberem, usa <code>flex-wrap</code>:</p>
+
+                <pre><code>.container {
+    display: flex;
+    flex-wrap: nowrap; /* padrão: tudo em uma linha */
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;   /* quebra pra próxima linha se não couber */
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap-reverse; /* quebra pra linha de CIMA */
+}</code></pre>
+
+                <p>Isso é essencial pra layouts responsivos. Imagina uma grade de cards: em tela grande cabem 3 por linha, em tela média 2, e no celular 1. Com <code>flex-wrap: wrap</code> e uma largura mínima nos items, isso acontece naturalmente:</p>
+
+                <pre><code>.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.card {
+    flex: 1 1 300px; /* cresce, encolhe, base mínima de 300px */
+}</code></pre>
+
+                <h2>gap: espaçamento entre items</h2>
+
+                <p>Antes a gente usava margin nos items pra criar espaço entre eles. O problema é que sobrava margin no primeiro ou último item. A propriedade <code>gap</code> resolve isso de forma limpa:</p>
+
+                <pre><code>.container {
+    display: flex;
+    gap: 1rem;         /* espaço igual em todas as direções */
+}
+
+.container {
+    display: flex;
+    gap: 1rem 2rem;    /* 1rem vertical, 2rem horizontal */
+}</code></pre>
+
+                <p>O <code>gap</code> só adiciona espaço ENTRE os items, nunca nas bordas. Exatamente o que queremos na maioria dos casos. Funciona com Flexbox e Grid.</p>
+
+                <h2>Propriedades dos items</h2>
+
+                <p>Até agora falamos de propriedades do container. Mas os items também têm propriedades úteis:</p>
+
+                <pre><code>.item {
+    flex-grow: 1;   /* permite que o item cresça */
+    flex-shrink: 1; /* permite que o item encolha */
+    flex-basis: 200px; /* tamanho base antes de crescer/encolher */
+}
+
+/* Atalho: */
+.item {
+    flex: 1 1 200px; /* grow shrink basis */
+}
+
+/* Item que não cresce nem encolhe: */
+.item-fixo {
+    flex: 0 0 200px;
+}
+
+/* Item que ocupa todo espaço disponível: */
+.item-expansivel {
+    flex: 1;
+}</code></pre>
+
+                <p>E o <code>align-self</code> permite que um item específico se alinhe diferente dos outros:</p>
+
+                <pre><code>.container {
+    display: flex;
+    align-items: flex-start; /* todos no topo */
+}
+
+.item-especial {
+    align-self: flex-end;    /* esse vai pra base */
+}</code></pre>
+
+                <h2>Exemplo prático: layout de página completo</h2>
+
+                <p>Vamos juntar tudo num exemplo real — um layout de página com header, conteúdo principal e footer:</p>
+
+                <pre><code>&lt;body class="page"&gt;
+    &lt;header class="header"&gt;Header&lt;/header&gt;
+    &lt;main class="content"&gt;Conteúdo&lt;/main&gt;
+    &lt;footer class="footer"&gt;Footer&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+
+                <pre><code>.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    padding: 1rem;
+}
+
+.content {
+    flex: 1; /* ocupa todo espaço disponível */
+    padding: 2rem;
+}
+
+.footer {
+    padding: 1rem;
+}</code></pre>
+
+                <p>O <code>flex: 1</code> no content faz ele expandir pra empurrar o footer pra baixo, independente da quantidade de conteúdo. Sem gambiarras, sem position fixed no footer. Limpo e funcional.</p>
+
+                <h2>Dicas finais</h2>
+
+                <ul>
+                    <li><strong>Use o DevTools:</strong> No Chrome, quando você inspeciona um elemento com <code>display: flex</code>, aparece um badge "flex" clicável que mostra os eixos visualmente. É ótimo pra debugar.</li>
+                    <li><strong>Pratique com Flexbox Froggy:</strong> É um joguinho que ensina Flexbox posicionando sapos em folhas. Parece bobo, mas ajuda muito a fixar os conceitos. Pesquisa "Flexbox Froggy" no Google.</li>
+                    <li><strong>Não tenha medo de testar:</strong> Muda os valores, vê o que acontece. Flexbox é muito visual — o feedback é imediato.</li>
+                    <li><strong>Flexbox vs Grid:</strong> Flexbox é pra layout em UMA dimensão (linha OU coluna). Grid é pra DUAS dimensões (linhas E colunas). Eles se complementam, não competem.</li>
+                </ul>
+
+                <blockquote>
+                    Resumo mental: <code>justify-content</code> = eixo principal. <code>align-items</code> = eixo cruzado. Se a direction é row, principal é horizontal. Se é column, principal é vertical. É só isso.
+                </blockquote>
+
+                <p>Flexbox é daquelas coisas que parece complexa até você praticar por uma semana. Depois vira segunda natureza. Vai por mim: gasta um tempo fazendo layoutzinhos variados e em pouco tempo você não vai nem pensar antes de usar.</p>
+
+                <p>Bons estudos e até o próximo artigo!</p>
+            </div>
+            <a href="../../../../index.html" class="article-back">← Voltar para o início</a>
+        </article>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha primeira API REST: o que aprendi — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/main.css">
+    <link rel="stylesheet" href="../../../../assets/css/responsive.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="../../../../index.html" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="../../../../index.html" class="nav-link">← Voltar ao início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="article-page">
+        <article class="article-container">
+            <div class="article-header">
+                <span class="article-category">Back-end</span>
+                <h1 class="article-title">Minha primeira API REST: o que aprendi</h1>
+                <p class="article-meta">Por Maverick Dev • 10 de dezembro de 2024</p>
+            </div>
+            <div class="article-cover">Back-end</div>
+            <div class="article-content">
+                <p>Cara, criar minha primeira API REST foi um divisor de águas. Sério. Antes disso eu ficava preso no front-end, fazendo tudo no navegador, e não entendia como os dados chegavam lá. Quando finalmente sentei pra estudar o back-end, percebi que não era esse bicho de sete cabeças que eu imaginava.</p>
+
+                <p>Vou compartilhar aqui tudo o que aprendi nesse processo, desde o conceito até o código funcionando. Se você tá começando agora, fica comigo que vai fazer sentido.</p>
+
+                <h2>Mas afinal, o que é uma API REST?</h2>
+
+                <p>Pensa assim: uma API (Application Programming Interface) é um garçom. O front-end é o cliente que faz o pedido, o back-end é a cozinha que prepara. A API é quem leva o pedido e traz a resposta. Simples assim.</p>
+
+                <p>Agora, REST (Representational State Transfer) é um conjunto de regras que esse garçom segue. São convenções que todo mundo combinou de usar pra que as APIs funcionem de forma previsível. As principais ideias são:</p>
+
+                <ul>
+                    <li><strong>Recursos:</strong> tudo é um recurso (usuários, produtos, posts). Cada recurso tem uma URL própria.</li>
+                    <li><strong>Métodos HTTP:</strong> usamos verbos como GET, POST, PUT e DELETE pra indicar o que queremos fazer.</li>
+                    <li><strong>Stateless:</strong> cada requisição é independente. O servidor não lembra quem você é entre uma requisição e outra.</li>
+                    <li><strong>JSON:</strong> o formato padrão pra enviar e receber dados. É leve e fácil de ler.</li>
+                </ul>
+
+                <h2>Os métodos HTTP na prática</h2>
+
+                <p>Essa parte me confundiu no começo, mas depois ficou natural. Pensa numa lista de tarefas:</p>
+
+                <ul>
+                    <li><strong>GET /tarefas</strong> → busca todas as tarefas</li>
+                    <li><strong>GET /tarefas/1</strong> → busca a tarefa com id 1</li>
+                    <li><strong>POST /tarefas</strong> → cria uma nova tarefa</li>
+                    <li><strong>PUT /tarefas/1</strong> → atualiza a tarefa com id 1</li>
+                    <li><strong>DELETE /tarefas/1</strong> → deleta a tarefa com id 1</li>
+                </ul>
+
+                <p>Percebe o padrão? A URL é sempre a mesma (/tarefas), o que muda é o método HTTP. Isso é REST sendo bonito.</p>
+
+                <h2>Montando o projeto com Node.js e Express</h2>
+
+                <p>Escolhi Node.js porque já sabia JavaScript do front-end, então a curva de aprendizado foi menor. E o Express é um framework minimalista que facilita muito a criação de rotas. Vamos ao setup:</p>
+
+<pre><code># Criar a pasta do projeto e inicializar
+mkdir minha-api
+cd minha-api
+npm init -y
+
+# Instalar o Express
+npm install express</code></pre>
+
+                <p>Depois de instalar, criei um arquivo <code>server.js</code> na raiz do projeto. Esse é o coração da nossa API:</p>
+
+<pre><code>const express = require('express');
+const app = express();
+const PORT = 3000;
+
+// Middleware pra entender JSON no body das requisições
+app.use(express.json());
+
+// Banco de dados fake (array na memória)
+let tarefas = [
+    { id: 1, titulo: 'Estudar Node.js', concluida: false },
+    { id: 2, titulo: 'Fazer projeto do curso', concluida: true }
+];
+
+// GET - Listar todas as tarefas
+app.get('/tarefas', (req, res) => {
+    res.json(tarefas);
+});
+
+// GET - Buscar tarefa por ID
+app.get('/tarefas/:id', (req, res) => {
+    const tarefa = tarefas.find(t => t.id === Number(req.params.id));
+    if (!tarefa) {
+        return res.status(404).json({ erro: 'Tarefa não encontrada' });
+    }
+    res.json(tarefa);
+});
+
+// POST - Criar nova tarefa
+app.post('/tarefas', (req, res) => {
+    const novaTarefa = {
+        id: tarefas.length + 1,
+        titulo: req.body.titulo,
+        concluida: false
+    };
+    tarefas.push(novaTarefa);
+    res.status(201).json(novaTarefa);
+});
+
+// PUT - Atualizar tarefa
+app.put('/tarefas/:id', (req, res) => {
+    const tarefa = tarefas.find(t => t.id === Number(req.params.id));
+    if (!tarefa) {
+        return res.status(404).json({ erro: 'Tarefa não encontrada' });
+    }
+    tarefa.titulo = req.body.titulo || tarefa.titulo;
+    tarefa.concluida = req.body.concluida ?? tarefa.concluida;
+    res.json(tarefa);
+});
+
+// DELETE - Remover tarefa
+app.delete('/tarefas/:id', (req, res) => {
+    const index = tarefas.findIndex(t => t.id === Number(req.params.id));
+    if (index === -1) {
+        return res.status(404).json({ erro: 'Tarefa não encontrada' });
+    }
+    tarefas.splice(index, 1);
+    res.status(204).send();
+});
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});</code></pre>
+
+                <p>Pra rodar, é só digitar <code>node server.js</code> no terminal. Pronto, sua API tá no ar!</p>
+
+                <h2>Testando a API</h2>
+
+                <p>No começo eu não sabia como testar sem ter um front-end. Aí descobri que dá pra usar o próprio terminal com curl, ou ferramentas como Postman e Insomnia. Eu gosto do Insomnia porque é mais visual. Mas aqui vão exemplos com curl:</p>
+
+<pre><code># Listar todas as tarefas
+curl http://localhost:3000/tarefas
+
+# Criar uma nova tarefa
+curl -X POST http://localhost:3000/tarefas \
+  -H "Content-Type: application/json" \
+  -d '{"titulo": "Escrever artigo pro blog"}'
+
+# Atualizar uma tarefa
+curl -X PUT http://localhost:3000/tarefas/1 \
+  -H "Content-Type: application/json" \
+  -d '{"concluida": true}'
+
+# Deletar uma tarefa
+curl -X DELETE http://localhost:3000/tarefas/2</code></pre>
+
+                <h2>Status codes: os números importam</h2>
+
+                <p>Uma coisa que eu ignorava no começo eram os códigos de status HTTP. Mas eles são fundamentais pra comunicar o que aconteceu:</p>
+
+                <ul>
+                    <li><strong>200</strong> — OK, deu tudo certo</li>
+                    <li><strong>201</strong> — Created, recurso criado com sucesso</li>
+                    <li><strong>204</strong> — No Content, deu certo mas não tem nada pra retornar (tipo no DELETE)</li>
+                    <li><strong>400</strong> — Bad Request, o cliente mandou algo errado</li>
+                    <li><strong>404</strong> — Not Found, recurso não existe</li>
+                    <li><strong>500</strong> — Internal Server Error, algo quebrou no servidor</li>
+                </ul>
+
+                <p>Retornar o status certo faz diferença porque o front-end usa esses códigos pra decidir o que mostrar pro usuário.</p>
+
+                <h2>O que é esse tal de JSON?</h2>
+
+                <p>JSON (JavaScript Object Notation) é basicamente a língua que front e back usam pra se entender. É um formato de texto que representa dados de forma estruturada:</p>
+
+<pre><code>{
+    "id": 1,
+    "titulo": "Estudar Node.js",
+    "concluida": false,
+    "tags": ["estudo", "backend"]
+}</code></pre>
+
+                <p>É parecido com um objeto JavaScript, mas com algumas diferenças: as chaves precisam estar entre aspas duplas e não aceita funções. Praticamente toda API moderna usa JSON, então vale dominar.</p>
+
+                <h2>Erros que cometi (pra você não repetir)</h2>
+
+                <p>Vou listar os erros que me fizeram perder tempo:</p>
+
+                <ul>
+                    <li><strong>Esquecer o express.json():</strong> sem esse middleware, o req.body vem undefined. Passei meia hora debugando isso.</li>
+                    <li><strong>Não converter o params pra número:</strong> req.params.id vem como string. Se comparar com === num número, nunca vai achar.</li>
+                    <li><strong>Esquecer o return antes do res.status(404):</strong> sem o return, o código continua executando e pode dar erro de "headers already sent".</li>
+                    <li><strong>Usar a mesma porta que outro processo:</strong> se der EADDRINUSE, é porque já tem algo rodando naquela porta. Mata o processo ou muda a porta.</li>
+                </ul>
+
+                <h2>Próximos passos</h2>
+
+                <p>Essa API é só o começo. Ela guarda dados na memória, então quando o servidor reinicia, perde tudo. Os próximos passos naturais são:</p>
+
+                <ul>
+                    <li>Conectar num banco de dados de verdade (MongoDB, PostgreSQL)</li>
+                    <li>Adicionar validação dos dados de entrada</li>
+                    <li>Implementar autenticação (JWT é o mais comum)</li>
+                    <li>Organizar o código em pastas (routes, controllers, models)</li>
+                    <li>Adicionar tratamento de erros global</li>
+                </ul>
+
+                <blockquote>Dica: não tenta fazer tudo de uma vez. Faz funcionar primeiro, depois melhora. Meu primeiro código era feio, mas rodava. E isso é o que importa no começo.</blockquote>
+
+                <p>Criar essa API me deu confiança pra entender como aplicações web funcionam de verdade. Quando voltei pro front-end e fiz um fetch() pra minha própria API, a sensação foi de "agora sim eu entendo o ciclo completo". Recomendo demais começar por um CRUD simples assim. Vai por mim, vale cada minuto.</p>
+            </div>
+            <a href="../../../../index.html" class="article-back">← Voltar para o início</a>
+        </article>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+</body>
+</html>

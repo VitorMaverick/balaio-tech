@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+    <style>
+        .admin-wrap { max-width: 900px; margin: 0 auto; padding: calc(var(--header-height) + 40px) 20px 80px; }
+        .login-form, .admin-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: var(--font-body); font-size: 0.95rem; }
+        .form-group textarea { min-height: 300px; font-family: var(--font-heading); font-size: 0.85rem; }
+        .btn-sm { padding: 8px 16px; font-size: 0.85rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-danger { background: #dc2626; color: #fff; }
+        .btn-edit { background: var(--accent); color: #fff; }
+        .articles-list { margin-top: 24px; }
+        .article-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .article-item-title { font-weight: 500; }
+        .article-item-actions { display: flex; gap: 8px; }
+        .hidden { display: none !important; }
+        h2 { font-family: var(--font-heading); margin-bottom: 20px; }
+        .msg { padding: 10px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; }
+        .msg-ok { background: #065f4620; color: #34d399; border: 1px solid #34d39940; }
+        .msg-err { background: #dc262620; color: #f87171; border: 1px solid #f8717140; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="/" class="nav-link">← Voltar ao blog</a></li></ul></nav>
+        </div>
+    </header>
+    <div class="admin-wrap">
+        <!-- Login -->
+        <div id="login-section" class="login-form">
+            <h2>🔒 Admin</h2>
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="username-input" placeholder="username">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="password-input" placeholder="senha">
+            </div>
+            <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
+            <div id="login-msg"></div>
+        </div>
+        <!-- Painel -->
+        <div id="admin-panel" class="admin-panel hidden">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <h2>📝 Artigos</h2>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-sm" style="background:var(--border);color:var(--text-primary);" onclick="runCleanup()">🧹 Limpar órfãs</button>
+                    <button class="btn btn-primary" onclick="showForm()">+ Novo artigo</button>
+                </div>
+            </div>
+            <div id="msg-area"></div>
+            <!-- Form -->
+            <div id="article-form" class="hidden" style="margin-bottom:24px;">
+                <div class="form-group"><label>Título</label><input id="f-title"></div>
+                <div class="form-group"><label>Slug</label><input id="f-slug" placeholder="meu-artigo"></div>
+                <div class="form-group"><label>Descrição</label><input id="f-desc"></div>
+                <div class="form-group"><label>Categoria</label><select id="f-cat"></select></div>
+                <div class="form-group"><label>Conteúdo (HTML)</label>
+                    <textarea id="f-content"></textarea>
+                </div>
+                <!-- Galeria de imagens -->
+                <div class="form-group">
+                    <label>🖼️ Galeria de Imagens</label>
+                    <div style="margin-bottom:8px;">
+                        <button type="button" class="btn-sm btn-edit" onclick="triggerImageUpload()">+ Enviar imagem</button>
+                        <input type="file" id="image-upload" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+                        <span id="upload-status" style="margin-left:8px;font-size:0.85rem;color:var(--text-secondary);"></span>
+                    </div>
+                    <div id="image-gallery" style="display:flex;flex-wrap:wrap;gap:8px;max-height:200px;overflow-y:auto;padding:8px;background:var(--bg-primary);border-radius:8px;border:1px solid var(--border);"></div>
+                </div>
+                <button class="btn btn-primary" onclick="saveArticle()">Salvar</button>
+                <button class="btn-sm" onclick="hideForm()" style="margin-left:8px;background:var(--border);color:var(--text-primary);">Cancelar</button>
+            </div>
+            <!-- Lista -->
+            <div class="articles-list" id="articles-list"></div>
+        </div>
+    </div>
+    <script>
+        let token = localStorage.getItem('admin_token') || '';
+        let editingSlug = null;
+
+        // Auto-login se tem token
+        if (token) checkToken();
+
+        async function checkToken() {
+            const res = await fetch('/api/articles', { headers: { Authorization: `Bearer ${token}` } });
+            if (res.ok) showPanel(); else { token = ''; localStorage.removeItem('admin_token'); }
+        }
+
+        async function doLogin() {
+            const username = document.getElementById('username-input').value;
+            const pw = document.getElementById('password-input').value;
+            const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password: pw }) });
+            const data = await res.json();
+            if (data.token) { token = data.token; localStorage.setItem('admin_token', token); showPanel(); }
+            else { document.getElementById('login-msg').innerHTML = '<p class="msg msg-err">Credenciais inválidas</p>'; }
+        }
+
+        function showPanel() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('admin-panel').classList.remove('hidden');
+            loadArticles();
+            loadCategories();
+        }
+
+        async function loadCategories() {
+            const cats = await (await fetch('/api/categories')).json();
+            document.getElementById('f-cat').innerHTML = cats.map(c => `<option value="${c.slug}">${c.icon} ${c.name}</option>`).join('');
+        }
+
+        async function loadArticles() {
+            const articles = await (await fetch('/api/articles?showAll=true')).json();
+            document.getElementById('articles-list').innerHTML = articles.map(a => `
+                <div class="article-item" style="${a.published ? '' : 'opacity:0.5;'}">
+                    <span class="article-item-title">${a.title} <small style="color:var(--text-secondary)">(${a.category_slug})</small></span>
+                    <div class="article-item-actions">
+                        <button class="btn-sm" style="background:${a.published ? '#34d399' : '#6b7280'};color:#fff;" onclick="togglePublish('${a.slug}')">${a.published ? '✓ Público' : '✗ Oculto'}</button>
+                        <button class="btn-sm btn-edit" onclick="editArticle('${a.slug}')">Editar</button>
+                        <button class="btn-sm btn-danger" onclick="deleteArticle('${a.slug}')">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showForm() { document.getElementById('article-form').classList.remove('hidden'); editingSlug = null; clearForm(); loadGallery(); }
+        function hideForm() { document.getElementById('article-form').classList.add('hidden'); editingSlug = null; }
+        function clearForm() { ['f-title','f-slug','f-desc','f-content'].forEach(id => document.getElementById(id).value = ''); }
+
+        async function editArticle(slug) {
+            const a = await (await fetch(`/api/articles/${slug}`)).json();
+            document.getElementById('f-title').value = a.title;
+            document.getElementById('f-slug').value = a.slug;
+            document.getElementById('f-desc').value = a.description || '';
+            document.getElementById('f-cat').value = a.category_slug;
+            document.getElementById('f-content').value = a.content;
+            document.getElementById('article-form').classList.remove('hidden');
+            editingSlug = slug;
+            loadGallery();
+        }
+
+        async function saveArticle() {
+            const body = { title: document.getElementById('f-title').value, slug: document.getElementById('f-slug').value, description: document.getElementById('f-desc').value, category_slug: document.getElementById('f-cat').value, content: document.getElementById('f-content').value };
+            const url = editingSlug ? `/api/articles/${editingSlug}` : '/api/articles';
+            const method = editingSlug ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(body) });
+            const data = await res.json();
+            if (res.ok) { showMsg('Artigo salvo!', 'ok'); hideForm(); loadArticles(); }
+            else { showMsg(data.error || 'Erro ao salvar', 'err'); }
+        }
+
+        async function deleteArticle(slug) {
+            if (!confirm('Excluir este artigo?')) return;
+            const res = await fetch(`/api/articles/${slug}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+            if (res.ok) { showMsg('Artigo excluído', 'ok'); loadArticles(); }
+            else { showMsg('Erro ao excluir', 'err'); }
+        }
+
+        async function runCleanup() {
+            const res = await fetch('/api/admin/cleanup', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+            const data = await res.json();
+            const total = (data.removedDisk || 0) + (data.removedDb || 0) + (data.removedOrphan || 0);
+            showMsg(total > 0 ? `${total} imagens órfãs removidas` : 'Nenhuma imagem órfã encontrada', 'ok');
+        }
+
+        async function togglePublish(slug) {
+            const res = await fetch(`/api/articles/${slug}/toggle`, { method: 'PUT', headers: { Authorization: `Bearer ${token}` } });
+            if (res.ok) loadArticles();
+            else showMsg('Erro ao alterar visibilidade', 'err');
+        }
+
+        function showMsg(text, type) {
+            document.getElementById('msg-area').innerHTML = `<p class="msg msg-${type}">${text}</p>`;
+            setTimeout(() => document.getElementById('msg-area').innerHTML = '', 3000);
+        }
+
+        // Enter no campo de senha
+        document.getElementById('password-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+        document.getElementById('username-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password-input').focus(); });
+
+        // === GALERIA DE IMAGENS ===
+        function triggerImageUpload() { document.getElementById('image-upload').click(); }
+
+        async function loadGallery() {
+            const gallery = document.getElementById('image-gallery');
+            const slug = document.getElementById('f-slug').value || null;
+            let images = [];
+            try {
+                const url = slug ? `/api/images?article_slug=${slug}` : '/api/images';
+                images = await (await fetch(url, { headers: { Authorization: `Bearer ${token}` } })).json();
+            } catch {}
+            gallery.innerHTML = images.length === 0 ? '<p style="color:var(--text-secondary);font-size:0.85rem;margin:8px;">Nenhuma imagem ainda.</p>' :
+                images.map(img => `
+                <div style="position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--border);">
+                    <img src="${img.url}" style="width:100px;height:100px;object-fit:cover;display:block;">
+                    <div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:2px;">
+                        <button onclick="insertImage('${img.url}','${img.filename}')" style="flex:1;padding:3px;font-size:0.7rem;background:#7c3aed;color:#fff;border:none;cursor:pointer;">Inserir</button>
+                        <button onclick="deleteImage(${img.id},'${img.url}')" style="flex:1;padding:3px;font-size:0.7rem;background:#dc2626;color:#fff;border:none;cursor:pointer;">Excluir</button>
+                    </div>
+                </div>`).join('');
+        }
+
+        function insertImage(url, filename) {
+            const textarea = document.getElementById('f-content');
+            const pos = textarea.selectionStart;
+            const tag = `<img src="${url}" alt="${filename.replace(/\.[^.]+$/, '')}" />`;
+            textarea.value = textarea.value.slice(0, pos) + '\n' + tag + '\n' + textarea.value.slice(pos);
+            textarea.focus();
+            showMsg('Imagem inserida no conteúdo', 'ok');
+        }
+
+        async function deleteImage(id, url) {
+            if (!confirm('Excluir esta imagem?')) return;
+            const res = await fetch(`/api/images/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+            if (res.ok) {
+                // Remover tag <img> do textarea se existir
+                const textarea = document.getElementById('f-content');
+                textarea.value = textarea.value.replace(new RegExp(`<img[^>]*src="${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*\\/?>`, 'g'), '');
+                loadGallery();
+                showMsg('Imagem excluída', 'ok');
+            }
+        }
+
+        document.getElementById('image-upload').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const status = document.getElementById('upload-status');
+            status.textContent = 'Enviando...';
+            const formData = new FormData();
+            formData.append('image', file);
+            const slug = document.getElementById('f-slug').value;
+            if (slug) formData.append('article_slug', slug);
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+                const data = await res.json();
+                if (data.url) {
+                    insertImage(data.url, file.name);
+                    loadGallery();
+                    status.textContent = '✓ Enviada';
+                } else { status.textContent = '✗ ' + (data.error || 'Erro'); }
+            } catch { status.textContent = '✗ Falha'; }
+            e.target.value = '';
+            setTimeout(() => status.textContent = '', 3000);
+        });
+    </script>
+</body>
+</html>

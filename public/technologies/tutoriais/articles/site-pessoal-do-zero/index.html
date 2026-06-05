@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: criando um site pessoal do zero — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/main.css">
+    <link rel="stylesheet" href="../../../../assets/css/responsive.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="../../../../index.html" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="../../../../index.html" class="nav-link">← Voltar ao início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="article-page">
+        <article class="article-container">
+            <div class="article-header">
+                <span class="article-category">Tutoriais</span>
+                <h1 class="article-title">Tutorial: criando um site pessoal do zero</h1>
+                <p class="article-meta">Por Maverick Dev • 3 de fevereiro de 2025</p>
+            </div>
+            <div class="article-cover">Tutoriais</div>
+            <div class="article-content">
+                <p>Todo dev precisa de um site pessoal. Sério. É o seu cartão de visita na internet, o lugar onde você mostra quem é, o que faz e o que já construiu. E a melhor parte? Você não precisa de framework nenhum pra isso. HTML e CSS puro dão conta do recado — e de quebra você pratica os fundamentos.</p>
+
+                <p>Nesse tutorial, vou te guiar passo a passo na criação de um site pessoal completo. Nada de template pronto, nada de copiar e colar sem entender. Vamos construir tudo do zero, entendendo cada pedaço. No final, você vai ter um site bonito, responsivo e pronto pra colocar no ar.</p>
+
+                <h2>O que vamos construir</h2>
+
+                <p>Nosso site vai ter:</p>
+                <ul>
+                    <li>Uma seção de apresentação (hero)</li>
+                    <li>Uma seção "Sobre mim"</li>
+                    <li>Uma seção de projetos</li>
+                    <li>Um rodapé com links de contato</li>
+                </ul>
+
+                <p>Tudo responsivo, ou seja, vai funcionar bem tanto no computador quanto no celular. Bora lá.</p>
+
+                <h2>Passo 1: Estrutura de arquivos</h2>
+
+                <p>Cria uma pasta pro seu projeto. Dentro dela, vamos ter dois arquivos:</p>
+
+                <ul>
+                    <li><code>index.html</code> — a estrutura do site</li>
+                    <li><code>style.css</code> — toda a estilização</li>
+                </ul>
+
+                <p>Simples assim. Sem node_modules, sem build, sem configuração. Abre o VS Code, cria a pasta, e vamos começar pelo HTML.</p>
+
+                <h2>Passo 2: O HTML semântico</h2>
+
+                <p>HTML semântico significa usar as tags certas pro conteúdo certo. Em vez de colocar tudo dentro de <code>&lt;div&gt;</code>, usamos tags como <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code> e <code>&lt;footer&gt;</code>. Isso ajuda na acessibilidade e no SEO.</p>
+
+                <p>Aqui vai a estrutura completa do nosso <code>index.html</code>:</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Maverick Dev — Portfólio&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header class="header"&gt;
+        &lt;nav class="nav"&gt;
+            &lt;a href="#" class="logo"&gt;Maverick Dev&lt;/a&gt;
+            &lt;ul class="nav-links"&gt;
+                &lt;li&gt;&lt;a href="#sobre"&gt;Sobre&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#projetos"&gt;Projetos&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#contato"&gt;Contato&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+
+    &lt;main&gt;
+        &lt;section class="hero"&gt;
+            &lt;h1&gt;Olá, eu sou o &lt;span&gt;Maverick&lt;/span&gt;&lt;/h1&gt;
+            &lt;p&gt;Estudante de tecnologia, desenvolvedor em formação
+            e apaixonado por criar coisas pra web.&lt;/p&gt;
+            &lt;a href="#projetos" class="btn"&gt;Ver meus projetos&lt;/a&gt;
+        &lt;/section&gt;
+
+        &lt;section id="sobre" class="sobre"&gt;
+            &lt;h2&gt;Sobre mim&lt;/h2&gt;
+            &lt;p&gt;Tenho 20 anos, estudo Sistemas de Informação
+            e estou sempre aprendendo algo novo. Atualmente
+            focado em desenvolvimento web com HTML, CSS,
+            JavaScript e React.&lt;/p&gt;
+        &lt;/section&gt;
+
+        &lt;section id="projetos" class="projetos"&gt;
+            &lt;h2&gt;Projetos&lt;/h2&gt;
+            &lt;div class="projetos-grid"&gt;
+                &lt;article class="projeto-card"&gt;
+                    &lt;h3&gt;Blog Balaio.tech&lt;/h3&gt;
+                    &lt;p&gt;Blog pessoal sobre tecnologia
+                    feito com HTML e CSS.&lt;/p&gt;
+                    &lt;a href="#"&gt;Ver projeto →&lt;/a&gt;
+                &lt;/article&gt;
+                &lt;article class="projeto-card"&gt;
+                    &lt;h3&gt;Lista de Tarefas&lt;/h3&gt;
+                    &lt;p&gt;App de to-do list feito com
+                    JavaScript vanilla.&lt;/p&gt;
+                    &lt;a href="#"&gt;Ver projeto →&lt;/a&gt;
+                &lt;/article&gt;
+                &lt;article class="projeto-card"&gt;
+                    &lt;h3&gt;Calculadora&lt;/h3&gt;
+                    &lt;p&gt;Calculadora funcional com
+                    interface clean.&lt;/p&gt;
+                    &lt;a href="#"&gt;Ver projeto →&lt;/a&gt;
+                &lt;/article&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+    &lt;/main&gt;
+
+    &lt;footer id="contato" class="footer"&gt;
+        &lt;h2&gt;Contato&lt;/h2&gt;
+        &lt;p&gt;Me encontre por aí:&lt;/p&gt;
+        &lt;ul class="contato-links"&gt;
+            &lt;li&gt;&lt;a href="#"&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="#"&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="#"&gt;Email&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+                <p>Repara em algumas coisas importantes aqui:</p>
+
+                <ul>
+                    <li>O <code>lang="pt-BR"</code> diz pro navegador que o conteúdo é em português</li>
+                    <li>A meta <code>viewport</code> é obrigatória pra responsividade funcionar</li>
+                    <li>Usamos <code>&lt;section&gt;</code> pra cada bloco de conteúdo, não <code>&lt;div&gt;</code></li>
+                    <li>Os <code>id</code> nas sections permitem a navegação com âncoras</li>
+                    <li>Cada projeto é um <code>&lt;article&gt;</code> porque é um conteúdo independente</li>
+                </ul>
+
+                <h2>Passo 3: Reset e estilos base</h2>
+
+                <p>Agora vamos pro CSS. Primeiro, um reset básico pra tirar os estilos padrão do navegador e definir nossas variáveis:</p>
+
+<pre><code>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --cor-fundo: #0f0f0f;
+    --cor-texto: #e0e0e0;
+    --cor-destaque: #64ffda;
+    --cor-card: #1a1a2e;
+    --fonte-principal: 'Segoe UI', sans-serif;
+}
+
+body {
+    font-family: var(--fonte-principal);
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--cor-destaque);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}</code></pre>
+
+                <p>O <code>box-sizing: border-box</code> é essencial — faz com que padding e border sejam incluídos no tamanho total do elemento. Sem isso, seus layouts vão quebrar de formas misteriosas.</p>
+
+                <p>As variáveis CSS (custom properties) facilitam demais a manutenção. Quer mudar a cor de destaque do site inteiro? Muda em um lugar só.</p>
+
+                <h2>Passo 4: Estilizando o header e navegação</h2>
+
+<pre><code>.header {
+    padding: 1.5rem 2rem;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    background-color: rgba(15, 15, 15, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-texto);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--cor-texto);
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--cor-destaque);
+    text-decoration: none;
+}</code></pre>
+
+                <p>O header fixo com <code>backdrop-filter: blur()</code> dá aquele efeito de vidro fosco que fica muito bonito em temas escuros. O <code>z-index: 100</code> garante que ele fica acima de todo o resto do conteúdo.</p>
+
+                <h2>Passo 5: A seção hero</h2>
+
+<pre><code>.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero h1 span {
+    color: var(--cor-destaque);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    max-width: 500px;
+    margin-bottom: 2rem;
+    color: #aaa;
+}
+
+.btn {
+    padding: 0.8rem 2rem;
+    border: 2px solid var(--cor-destaque);
+    border-radius: 5px;
+    color: var(--cor-destaque);
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--cor-destaque);
+    color: var(--cor-fundo);
+    text-decoration: none;
+}</code></pre>
+
+                <p>O <code>min-height: 100vh</code> faz a seção hero ocupar a tela inteira. O Flexbox centraliza tudo vertical e horizontalmente. É a combinação mais usada no desenvolvimento web moderno pra centralizar conteúdo.</p>
+
+                <h2>Passo 6: Seções de conteúdo e grid de projetos</h2>
+
+<pre><code>.sobre, .projetos {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+}
+
+.sobre h2, .projetos h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--cor-destaque);
+}
+
+.projetos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.projeto-card {
+    background-color: var(--cor-card);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #2a2a3e;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.projeto-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--cor-destaque);
+}
+
+.projeto-card h3 {
+    margin-bottom: 0.8rem;
+    font-size: 1.3rem;
+}
+
+.projeto-card p {
+    color: #aaa;
+    margin-bottom: 1rem;
+}</code></pre>
+
+                <p>Aqui tá a mágica da responsividade sem media query: <code>grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))</code>. Essa linha sozinha faz os cards se reorganizarem automaticamente conforme o tamanho da tela. Em telas grandes ficam 3 colunas, em tablets 2, no celular 1. Tudo automático.</p>
+
+                <h2>Passo 7: Footer e responsividade</h2>
+
+<pre><code>.footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-top: 1px solid #2a2a3e;
+}
+
+.footer h2 {
+    color: var(--cor-destaque);
+    margin-bottom: 1rem;
+}
+
+.contato-links {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .contato-links {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+}</code></pre>
+
+                <p>A media query cuida dos ajustes finos que o grid sozinho não resolve — como tamanho de fonte e espaçamento que ficam grandes demais no celular.</p>
+
+                <h2>Dicas extras que fazem diferença</h2>
+
+                <p>Agora que o site tá pronto, algumas dicas pra deixar ele ainda melhor:</p>
+
+                <ul>
+                    <li><strong>Smooth scroll:</strong> adicione <code>html { scroll-behavior: smooth; }</code> no CSS. Os links de âncora vão rolar suavemente em vez de pular</li>
+                    <li><strong>Favicon:</strong> adicione um favicon pro site ter aquele ícone na aba do navegador. Pode usar o <a href="https://favicon.io">favicon.io</a> pra gerar um</li>
+                    <li><strong>Meta description:</strong> adicione <code>&lt;meta name="description" content="Portfólio de Maverick Dev"&gt;</code> no head pra melhorar o SEO</li>
+                    <li><strong>Fonte do Google Fonts:</strong> uma fonte boa muda completamente a cara do site. Inter, Poppins ou Fira Code são ótimas opções</li>
+                </ul>
+
+                <h2>Colocando no ar</h2>
+
+                <p>Com o site pronto, você pode hospedá-lo de graça no GitHub Pages. É só criar um repositório, subir seus arquivos e ativar o Pages nas configurações. Em 5 minutos seu site tá online com uma URL tipo <code>seuusuario.github.io</code>.</p>
+
+                <p>Outra opção é a Vercel ou Netlify — só arrastar a pasta do projeto pra lá e pronto, tá no ar. Sem configuração nenhuma.</p>
+
+                <blockquote>O melhor portfólio é aquele que existe. Não espere ficar perfeito pra publicar. Coloca no ar, vai melhorando com o tempo.</blockquote>
+
+                <h2>Conclusão</h2>
+
+                <p>Com HTML e CSS puro, sem nenhum framework, a gente construiu um site pessoal completo, bonito e responsivo. Esse é o tipo de projeto que mostra pra um recrutador que você domina os fundamentos — e fundamentos sólidos são o que separam quem realmente entende web de quem só copia tutorial.</p>
+
+                <p>Pega esse código, personaliza com as suas informações, muda as cores, adiciona seus projetos reais. Faz ele seu. E o mais importante: coloca no ar. Um site publicado vale mais que dez projetos na sua máquina que ninguém nunca viu.</p>
+
+                <p>Se ficou com alguma dúvida ou quer mostrar o resultado, me chama lá no GitHub. Bora construir coisas juntos.</p>
+            </div>
+            <a href="../../../../index.html" class="article-back">← Voltar para o início</a>
+        </article>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+</body>
+</html>

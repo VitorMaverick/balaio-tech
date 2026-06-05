@@ -1,0 +1,20 @@
+{
+  "name": "ctrl-s-blog",
+  "version": "1.0.0",
+  "description": "Blog pessoal Ctrl+S — fullstack com Express + SQLite",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "seed": "node seed.js",
+    "cleanup": "node cleanup.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "11.7.0",
+    "express": "4.21.2",
+    "jsonwebtoken": "9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3"
+  }
+}

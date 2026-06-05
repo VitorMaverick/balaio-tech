@@ -1,0 +1,57 @@
+/* === RESPONSIVIDADE === */
+
+@media (max-width: 768px) {
+    .hamburger { display: flex; }
+
+    .nav {
+        position: fixed; top: var(--header-height); left: 0; right: 0; bottom: 0;
+        background: var(--bg-primary); z-index: 999;
+        transform: translateX(100%); transition: transform var(--transition);
+        padding: 40px 20px;
+    }
+    .nav.active { transform: translateX(0); }
+    .nav-list { flex-direction: column; align-items: flex-start; gap: 0; }
+    .nav-list li { width: 100%; }
+    .nav-link { display: block; padding: 16px 0; font-size: 1.1rem; border-bottom: 1px solid var(--border); }
+
+    .nav-dropdown:hover .dropdown-menu,
+    .dropdown-menu.active {
+        position: static; opacity: 1; visibility: visible; transform: none;
+        background: transparent; border: none; box-shadow: none; padding-left: 20px;
+    }
+    .dropdown-menu { position: static !important; opacity: 0; visibility: hidden; }
+    .nav-dropdown.active .dropdown-menu { opacity: 1 !important; visibility: visible !important; display: block; }
+
+    .hero-content { flex-direction: column-reverse; text-align: center; gap: 40px; padding-top: 40px; }
+    .hero-name { font-size: 2.2rem; }
+    .hero-description { margin: 0 auto 32px; }
+    .avatar-placeholder { width: 180px; height: 180px; font-size: 2rem; }
+
+    .contact-content { flex-direction: column; text-align: center; }
+    .contact-info .section-title { text-align: center; }
+    .contact-links { align-items: center; }
+    .contact-photo { width: 150px; height: 150px; }
+
+    .footer-content { flex-direction: column; text-align: center; }
+
+    .article-title { font-size: 1.6rem; }
+    .article-cover { height: 200px; }
+
+    .categories-grid { gap: 8px; }
+    .category-card { padding: 10px 12px; min-width: 75px; font-size: 0.8rem; }
+    .category-icon { font-size: 1.2rem; }
+    .category-title { font-size: 1.5rem; }
+    .articles-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .hero-name { font-size: 1.8rem; }
+    .hero-typed { font-size: 1rem; }
+    .section-title { font-size: 1.5rem; }
+    .blog-card-img { height: 140px; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-content { gap: 40px; }
+    .avatar-placeholder { width: 220px; height: 220px; }
+}

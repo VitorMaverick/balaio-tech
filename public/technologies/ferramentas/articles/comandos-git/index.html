@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comandos Git que uso todo dia — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/main.css">
+    <link rel="stylesheet" href="../../../../assets/css/responsive.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="../../../../index.html" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="../../../../index.html" class="nav-link">← Voltar ao início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="article-page">
+        <article class="article-container">
+            <div class="article-header">
+                <span class="article-category">Ferramentas</span>
+                <h1 class="article-title">Comandos Git que uso todo dia</h1>
+                <p class="article-meta">Por Maverick Dev • 18 de dezembro de 2024</p>
+            </div>
+            <div class="article-cover">Ferramentas</div>
+            <div class="article-content">
+                <p>Git foi uma daquelas coisas que eu evitei por meses. Ficava fazendo backup manual das pastas, tipo "projeto-v1", "projeto-v2-final", "projeto-v2-final-AGORA-VAI". Até que num trabalho em grupo no curso, não teve jeito: ou aprendia Git ou ia sofrer. Aprendi. E hoje não vivo sem.</p>
+
+                <p>Esse artigo é o guia que eu queria ter tido. Sem enrolação, direto ao ponto: os comandos que realmente uso no dia a dia, com explicação de quando e por que usar cada um.</p>
+
+                <h2>Primeiro: o que é Git?</h2>
+
+                <p>Git é um sistema de controle de versão. Ele salva "fotos" do seu projeto ao longo do tempo. Se você fez besteira, pode voltar atrás. Se está trabalhando com mais gente, cada um pode mexer em partes diferentes sem conflito. É basicamente um Ctrl+Z profissional pro seu código.</p>
+
+                <p>Git é a ferramenta local. GitHub/GitLab são plataformas online que guardam seu repositório na nuvem. Não confunde os dois.</p>
+
+                <h2>git init — Começando um repositório</h2>
+
+                <p>Tudo começa aqui. Quando crio um projeto novo, a primeira coisa que faço é:</p>
+
+<pre><code>mkdir meu-projeto
+cd meu-projeto
+git init</code></pre>
+
+                <p>Isso cria uma pasta oculta <code>.git</code> que é onde o Git guarda todo o histórico. A partir daqui, o Git tá observando essa pasta.</p>
+
+                <p>Se o projeto já existe no GitHub, ao invés de init eu uso clone:</p>
+
+<pre><code>git clone https://github.com/usuario/repositorio.git</code></pre>
+
+                <h2>git status — Entendendo o estado atual</h2>
+
+                <p>Esse é o comando que mais digito no dia. Ele mostra o que mudou, o que tá preparado pro commit e o que o Git tá ignorando:</p>
+
+<pre><code>git status</code></pre>
+
+                <p>A saída mostra arquivos em vermelho (modificados mas não staged) e em verde (prontos pro commit). Eu rodo esse comando antes de qualquer outro, tipo um "onde eu tô?".</p>
+
+                <h2>git add — Preparando as mudanças</h2>
+
+                <p>O Git tem um conceito de "staging area" — uma área intermediária. Antes de salvar um commit, você escolhe quais mudanças quer incluir:</p>
+
+<pre><code># Adicionar um arquivo específico
+git add index.html
+
+# Adicionar todos os arquivos modificados
+git add .
+
+# Adicionar só os arquivos de uma pasta
+git add src/</code></pre>
+
+                <p>No começo eu usava <code>git add .</code> pra tudo, mas aprendi que às vezes é melhor ser seletivo. Se você mexeu em 5 arquivos mas só quer commitar 2 que são relacionados, adiciona só eles. Commits menores e focados são mais fáceis de entender depois.</p>
+
+                <h2>git commit — Salvando no histórico</h2>
+
+                <p>Esse é o "Balaio.tech definitivo". O commit salva uma foto do estado atual dos arquivos que estão na staging area:</p>
+
+<pre><code># Commit com mensagem inline
+git commit -m "adiciona formulário de contato"
+
+# Commit abrindo o editor pra mensagem mais longa
+git commit</code></pre>
+
+                <p>Dicas pra boas mensagens de commit:</p>
+
+                <ul>
+                    <li>Começa com verbo no imperativo: "adiciona", "corrige", "remove"</li>
+                    <li>Seja específico: "corrige bug no login" é melhor que "fix"</li>
+                    <li>Mantenha curto: até uns 50 caracteres na primeira linha</li>
+                    <li>Não comita coisa quebrada: se não compila, não comita</li>
+                </ul>
+
+                <blockquote>Regra pessoal: se eu não consigo explicar o commit em uma frase curta, provavelmente tô tentando colocar coisa demais num commit só.</blockquote>
+
+                <h2>git log — Vendo o histórico</h2>
+
+                <p>Quando preciso ver o que já foi feito:</p>
+
+<pre><code># Log completo
+git log
+
+# Log resumido (uma linha por commit)
+git log --oneline
+
+# Log com gráfico de branches (meu favorito)
+git log --oneline --graph --all</code></pre>
+
+                <p>O <code>--oneline --graph --all</code> é lindo. Mostra as branches como linhas se cruzando, parece um mapa de metrô. Ajuda muito a visualizar o que tá acontecendo no projeto.</p>
+
+                <h2>git branch — Trabalhando com branches</h2>
+
+                <p>Branch é tipo uma realidade paralela do seu código. Você cria uma branch, faz suas mudanças lá, e se der certo, junta com a branch principal. Se der errado, joga fora sem afetar nada:</p>
+
+<pre><code># Ver branches existentes
+git branch
+
+# Criar uma nova branch
+git branch feature/navbar
+
+# Mudar pra outra branch
+git checkout feature/navbar
+
+# Criar e já mudar (atalho que mais uso)
+git checkout -b feature/navbar</code></pre>
+
+                <p>Minha convenção de nomes:</p>
+
+                <ul>
+                    <li><code>feature/nome</code> — funcionalidade nova</li>
+                    <li><code>fix/nome</code> — correção de bug</li>
+                    <li><code>refactor/nome</code> — reorganização de código</li>
+                </ul>
+
+                <h2>git merge — Juntando branches</h2>
+
+                <p>Quando a feature tá pronta, hora de juntar com a main:</p>
+
+<pre><code># Primeiro, volto pra main
+git checkout main
+
+# Puxo as atualizações mais recentes
+git pull
+
+# Junto a branch da feature
+git merge feature/navbar</code></pre>
+
+                <p>Se ninguém mexeu nos mesmos arquivos, o merge é automático. Se mexeu... aí vem os temidos conflitos. Não entra em pânico. O Git marca no arquivo exatamente onde o conflito tá:</p>
+
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+código que tá na main
+=======
+código que tá na sua branch
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/navbar</code></pre>
+
+                <p>Você decide qual versão manter (ou combina as duas), remove as marcações e faz um novo commit. No começo dá medo, mas depois vira rotina.</p>
+
+                <h2>git push — Mandando pro remoto</h2>
+
+                <p>Push é o que manda seus commits locais pro GitHub/GitLab:</p>
+
+<pre><code># Push da branch atual
+git push
+
+# Primeiro push de uma branch nova
+git push -u origin feature/navbar
+
+# Push da main
+git push origin main</code></pre>
+
+                <p>O <code>-u</code> (upstream) cria a conexão entre sua branch local e a remota. Depois do primeiro push com -u, os próximos basta <code>git push</code> sozinho.</p>
+
+                <h2>git pull — Trazendo atualizações</h2>
+
+                <p>Pull é o inverso do push. Traz as mudanças do remoto pro seu computador:</p>
+
+<pre><code>git pull</code></pre>
+
+                <p>Eu sempre dou pull antes de começar a trabalhar. Se o colega fez push ontem à noite, quero ter essas mudanças antes de começar a mexer. Evita conflitos desnecessários.</p>
+
+                <h2>Meu fluxo de trabalho real</h2>
+
+                <p>Aqui tá como meu dia a dia funciona com Git:</p>
+
+<pre><code># 1. Começo do dia: atualizo a main
+git checkout main
+git pull
+
+# 2. Crio uma branch pra tarefa
+git checkout -b feature/card-produto
+
+# 3. Codifico... testo... funciona!
+
+# 4. Verifico o que mudou
+git status
+
+# 5. Adiciono e comito
+git add .
+git commit -m "cria componente de card do produto"
+
+# 6. Mando pro remoto
+git push -u origin feature/card-produto
+
+# 7. Abro um Pull Request no GitHub
+
+# 8. Depois de aprovado, faço merge na main</code></pre>
+
+                <h2>Comandos de emergência</h2>
+
+                <p>Pra quando as coisas dão errado (e vão dar):</p>
+
+<pre><code># Desfazer mudanças não commitadas num arquivo
+git checkout -- arquivo.txt
+
+# Tirar arquivo da staging area (desfaz o add)
+git reset HEAD arquivo.txt
+
+# Voltar pro commit anterior (CUIDADO: perde mudanças)
+git reset --hard HEAD~1
+
+# Ver diferenças antes de commitar
+git diff</code></pre>
+
+                <blockquote>Dica de ouro: o git reset --hard é perigoso. Só use se realmente quer jogar fora o que fez. Na dúvida, usa git stash que guarda as mudanças sem apagar.</blockquote>
+
+                <h2>.gitignore — O que NÃO versionar</h2>
+
+                <p>Cria um arquivo <code>.gitignore</code> na raiz do projeto pra dizer pro Git o que ignorar:</p>
+
+<pre><code>node_modules/
+.env
+dist/
+*.log
+.DS_Store</code></pre>
+
+                <p>Nunca, jamais, suba a pasta node_modules pro GitHub. São milhares de arquivos que qualquer pessoa pode baixar com <code>npm install</code>. E nunca suba arquivos .env com senhas e chaves de API.</p>
+
+                <h2>Resumindo</h2>
+
+                <p>Git parece complicado no começo porque tem muitos comandos. Mas no dia a dia, você usa uns 10 comandos e resolve 95% das situações. Minha dica: usa Git desde o primeiro projeto pessoal. Nem precisa GitHub no começo — só o <code>git init</code> e commitar local já te salva. A confiança vem com a prática, e quando você se acostumar, vai se perguntar como vivia sem.</p>
+            </div>
+            <a href="../../../../index.html" class="article-back">← Voltar para o início</a>
+        </article>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+</body>
+</html>

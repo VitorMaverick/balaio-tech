@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balaio.tech — Salvando o que aprendo</title>
+    <meta name="description" content="Blog pessoal de um estudante de tecnologia compartilhando o que está aprendendo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body>
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader-spinner"></div>
+        <p>Balaio.tech</p>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container header-content">
+            <a href="#" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav" id="nav">
+                <ul class="nav-list">
+                    <li><a href="#home" class="nav-link active">Início</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#blog" class="nav-link dropdown-toggle">Blog <span class="arrow">▾</span></a>
+                        <ul class="dropdown-menu" id="categories-dropdown"></ul>
+                    </li>
+                    <li><a href="#contato" class="nav-link">Contato</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Alternar tema">
+                    <span class="icon-moon">🌙</span>
+                    <span class="icon-sun">☀️</span>
+                </button>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero / Home -->
+    <section class="hero" id="home">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <p class="hero-greeting">Bem-vindo ao</p>
+                <h1 class="hero-name">Balaio.tech</h1>
+                <p class="hero-typed">
+                    <span id="typed-output"></span>
+                </p>
+                <p class="hero-description">
+                    Um espaço de tecnologia, cultura e aprendizado — o balaio do conhecimento.
+                </p>
+                <a href="#blog" class="btn btn-primary">Ver artigos</a>
+            </div>
+            <div class="hero-avatar">
+                <div class="avatar-placeholder">
+                    <span>{'>'}_</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="blog-section" id="blog">
+        <div class="container">
+            <h2 class="section-title">Artigos Recentes</h2>
+            <p class="section-subtitle">O que tenho aprendido ultimamente</p>
+            <div class="swiper blog-swiper">
+                <div class="swiper-wrapper" id="blog-cards">
+                    <!-- Cards inseridos via JS -->
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato -->
+    <section class="contact-section" id="contato">
+        <div class="container contact-content">
+            <div class="contact-info">
+                <h2 class="section-title">Vamos conversar?</h2>
+                <p>Se quiser trocar ideia sobre tecnologia, projetos ou qualquer coisa — me chama.</p>
+                <ul class="contact-links">
+                    <li><a href="mailto:mr.verickss@gmail.com">📧 mr.verickss@gmail.com</a></li>
+                    <li><a href="https://www.linkedin.com/in/vitor-maverick/" target="_blank">💼 LinkedIn</a></li>
+                    <li><a href="https://github.com/VitorMaverick" target="_blank">🐙 GitHub</a></li>
+                    <li><a href="https://instagram.com/vitormaverick" target="_blank">📷 Instagram</a></li>
+                </ul>
+            </div>
+            <div class="contact-avatar">
+                <div class="avatar-placeholder contact-photo">
+                    <span>:)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <p class="footer-logo">Balaio<span>.tech</span></p>
+            <div class="footer-links">
+                <a href="https://github.com/VitorMaverick" target="_blank">GitHub</a>
+                <a href="https://www.linkedin.com/in/vitor-maverick/" target="_blank">LinkedIn</a>
+                <a href="https://instagram.com/vitormaverick" target="_blank">Instagram</a>
+            </div>
+            <p class="footer-copy">&copy; 2024 Balaio.tech. Feito com café e ancestralidade.</p>
+        </div>
+    </footer>
+
+    <!-- Botão voltar ao topo -->
+    <button class="back-to-top" id="back-to-top" aria-label="Voltar ao topo">↑</button>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/blog-slider.js"></script>
+    <script src="assets/js/loader.js"></script>
+</body>
+</html>

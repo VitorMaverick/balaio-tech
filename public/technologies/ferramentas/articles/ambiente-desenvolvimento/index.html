@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como configurei meu ambiente de desenvolvimento — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/main.css">
+    <link rel="stylesheet" href="../../../../assets/css/responsive.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="../../../../index.html" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="../../../../index.html" class="nav-link">← Voltar ao início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="article-page">
+        <article class="article-container">
+            <div class="article-header">
+                <span class="article-category">Ferramentas</span>
+                <h1 class="article-title">Como configurei meu ambiente de desenvolvimento</h1>
+                <p class="article-meta">Por Maverick Dev • 14 de janeiro de 2025</p>
+            </div>
+            <div class="article-cover">Ferramentas</div>
+            <div class="article-content">
+                <p>Sabe aquela sensação de abrir o editor e tudo funcionar bonito? Autocompletar certinho, terminal integrado respondendo rápido, atalhos na ponta dos dedos. Não é frescura — um ambiente bem configurado te faz codar mais rápido e com menos frustração. Demorei um tempo ajustando o meu, então vou documentar aqui exatamente o que uso e por quê.</p>
+
+                <p>Aviso: esse é o MEU setup. Não é o melhor do mundo, é o que funciona pra mim como estudante que trabalha com web (front e back). Adapta pro teu contexto.</p>
+
+                <h2>VS Code — o editor</h2>
+
+                <p>Usei Sublime Text por um tempo, testei o Vim (durou 3 dias), mas o VS Code ganhou disparado. É leve o suficiente, tem extensões pra tudo e a comunidade é gigante. Qualquer dúvida, alguém já passou pelo mesmo problema.</p>
+
+                <p>Pra instalar, baixa direto do site oficial ou, no Linux:</p>
+
+<pre><code># Ubuntu/Debian
+sudo apt update
+sudo apt install code
+
+# Ou via snap
+sudo snap install code --classic</code></pre>
+
+                <h2>Extensões que não vivo sem</h2>
+
+                <p>Essa é a parte que faz diferença. O VS Code "pelado" é bom, mas com extensões vira outro nível:</p>
+
+                <ul>
+                    <li><strong>ESLint</strong> — aponta erros de JavaScript/TypeScript em tempo real. Não espera compilar pra descobrir que esqueceu um ponto e vírgula.</li>
+                    <li><strong>Prettier</strong> — formata o código automaticamente ao salvar. Nunca mais brigo com indentação.</li>
+                    <li><strong>Live Server</strong> — abre um servidor local com hot reload. Salva o HTML e o navegador atualiza sozinho.</li>
+                    <li><strong>GitLens</strong> — mostra quem editou cada linha, quando, e em qual commit. Ótimo em projetos com mais gente.</li>
+                    <li><strong>Thunder Client</strong> — tipo um Postman dentro do VS Code. Testa APIs sem sair do editor.</li>
+                    <li><strong>Material Icon Theme</strong> — ícones bonitinhos pra cada tipo de arquivo. Parece besteira mas ajuda a identificar rápido.</li>
+                    <li><strong>Error Lens</strong> — mostra os erros inline, direto na linha com problema. Não precisa ficar olhando o painel de problemas.</li>
+                    <li><strong>Auto Rename Tag</strong> — renomeia a tag de fechamento quando você muda a de abertura. Salva tempo com HTML.</li>
+                </ul>
+
+                <h2>Configurações do VS Code</h2>
+
+                <p>Além das extensões, algumas configurações no <code>settings.json</code> que fazem diferença:</p>
+
+<pre><code>{
+    "editor.fontSize": 15,
+    "editor.fontFamily": "Fira Code, monospace",
+    "editor.fontLigatures": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.wordWrap": "on",
+    "editor.minimap.enabled": false,
+    "editor.bracketPairColorization.enabled": true,
+    "terminal.integrated.fontSize": 14,
+    "workbench.colorTheme": "One Dark Pro",
+    "files.autoSave": "onFocusChange"
+}</code></pre>
+
+                <p>O <code>formatOnSave</code> é a configuração mais importante pra mim. Nunca mais perco tempo formatando manualmente. Escrevo o código de qualquer jeito e ao salvar ele fica bonitinho.</p>
+
+                <p>Ligatures do Fira Code transformam <code>!=</code> em ≠ e <code>=></code> numa setinha. É só estética, mas deixa o código mais legível visualmente.</p>
+
+                <h2>Terminal — Oh My Zsh</h2>
+
+                <p>O terminal padrão funciona, mas é sem graça. Instalei o Zsh com Oh My Zsh e a experiência mudou completamente:</p>
+
+<pre><code># Instalar Zsh
+sudo apt install zsh
+
+# Definir como shell padrão
+chsh -s $(which zsh)
+
+# Instalar Oh My Zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"</code></pre>
+
+                <p>Depois de instalar, configurei no arquivo <code>~/.zshrc</code>:</p>
+
+<pre><code># Tema (uso o spaceship, mas powerlevel10k também é ótimo)
+ZSH_THEME="spaceship"
+
+# Plugins úteis
+plugins=(
+    git
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    node
+    npm
+)</code></pre>
+
+                <p>Os plugins que mais uso:</p>
+
+                <ul>
+                    <li><strong>git</strong> — atalhos tipo <code>gst</code> (git status), <code>gco</code> (git checkout), <code>gcmsg</code> (git commit -m)</li>
+                    <li><strong>zsh-autosuggestions</strong> — sugere comandos baseado no histórico. Aperta seta direita pra aceitar.</li>
+                    <li><strong>zsh-syntax-highlighting</strong> — colore os comandos. Verde se existe, vermelho se tá errado.</li>
+                </ul>
+
+                <blockquote>Se usa Windows, o PowerShell com Oh My Posh é a alternativa equivalente. Ou instala WSL2 e usa Linux dentro do Windows — é o que muita gente faz.</blockquote>
+
+                <h2>Node.js — com NVM</h2>
+
+                <p>Não instala o Node direto do site. Usa o NVM (Node Version Manager). Ele deixa você ter várias versões do Node e alternar entre elas. Isso salva quando um projeto precisa de Node 18 e outro de Node 20:</p>
+
+<pre><code># Instalar NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Reiniciar o terminal e depois:
+nvm install --lts
+nvm use --lts
+
+# Ver versão instalada
+node --version
+npm --version</code></pre>
+
+                <p>Depois instalo alguns pacotes globais que uso frequentemente:</p>
+
+<pre><code>npm install -g nodemon    # reinicia servidor automaticamente
+npm install -g live-server # servidor estático rápido
+npm install -g typescript  # compilador TS global</code></pre>
+
+                <h2>Git — configuração inicial</h2>
+
+                <p>Depois de instalar o Git, a primeira coisa é configurar nome e email (são os que aparecem nos commits):</p>
+
+<pre><code>git config --global user.name "Maverick Dev"
+git config --global user.email "maverick@email.com"
+
+# Editor padrão (pra mensagens de commit longas)
+git config --global core.editor "code --wait"
+
+# Branch padrão como main ao invés de master
+git config --global init.defaultBranch main</code></pre>
+
+                <p>Também configuro SSH pro GitHub pra não ter que digitar senha toda vez que dou push:</p>
+
+<pre><code># Gerar chave SSH
+ssh-keygen -t ed25519 -C "maverick@email.com"
+
+# Copiar a chave pública
+cat ~/.ssh/id_ed25519.pub
+# Cola no GitHub → Settings → SSH and GPG keys</code></pre>
+
+                <h2>Navegador — DevTools é obrigatório</h2>
+
+                <p>Uso o Chrome como navegador principal de desenvolvimento por causa do DevTools. Algumas coisas que aprendi a usar e não largo mais:</p>
+
+                <ul>
+                    <li><strong>Elements:</strong> inspecionar e editar HTML/CSS ao vivo. Testo mudanças visuais antes de mexer no código.</li>
+                    <li><strong>Console:</strong> testar JavaScript rápido, ver erros, debugar com console.log (sim, ainda uso muito).</li>
+                    <li><strong>Network:</strong> ver todas as requisições HTTP. Fundamental quando tô trabalhando com APIs. Mostra status, tempo, payload.</li>
+                    <li><strong>Application:</strong> localStorage, sessionStorage, cookies. Tudo que o navegador guarda.</li>
+                    <li><strong>Lighthouse:</strong> audita performance, acessibilidade e SEO. Roda e vai corrigindo os problemas que aponta.</li>
+                </ul>
+
+                <p>Extensões do Chrome que ajudam:</p>
+
+                <ul>
+                    <li><strong>React Developer Tools</strong> — se trabalha com React, é obrigatório.</li>
+                    <li><strong>JSON Viewer</strong> — formata JSON bonito quando abre uma URL de API no navegador.</li>
+                    <li><strong>ColorZilla</strong> — pega cores de qualquer elemento da página.</li>
+                </ul>
+
+                <h2>Organização de pastas</h2>
+
+                <p>Pode parecer bobo, mas ter uma estrutura organizada no computador faz diferença. Minha estrutura:</p>
+
+<pre><code>~/dev/
+├── projetos/        # projetos pessoais
+├── estudos/         # exercícios e cursos
+├── freelas/         # trabalhos freelance
+└── sandbox/         # testes rápidos descartáveis</code></pre>
+
+                <p>A pasta <code>sandbox</code> é minha favorita. Quando quero testar algo rápido sem criar um projeto formal, jogo lá. Não tem compromisso, posso deletar quando quiser.</p>
+
+                <h2>Extras que fazem diferença</h2>
+
+                <ul>
+                    <li><strong>Spotify no fundo:</strong> lofi ou trilha sonora de jogo. Parece besteira mas me mantém focado.</li>
+                    <li><strong>Segundo monitor:</strong> código num, documentação/navegador no outro. Se não tem monitor extra, usa workspaces virtuais do sistema.</li>
+                    <li><strong>Pomodoro:</strong> 25 min focado, 5 min de pausa. Uso uma extensão do navegador mesmo.</li>
+                </ul>
+
+                <blockquote>Não gasta uma semana configurando ambiente ao invés de codar. Começa com o básico e vai ajustando conforme sente necessidade. Eu fui adicionando extensão por extensão ao longo de meses, não tudo de uma vez.</blockquote>
+
+                <h2>Conclusão</h2>
+
+                <p>Seu ambiente de desenvolvimento é onde você passa horas todo dia. Vale investir um tempo configurando. Mas lembra: a melhor configuração é a que te deixa produtivo, não a mais bonita. Se você codar bem num Notepad++, tá valendo. O importante é que as ferramentas te ajudem, não te atrapalhem.</p>
+
+                <p>Meu setup hoje é resultado de meses experimentando. Comecei só com VS Code e terminal padrão, e fui evoluindo. Faz o mesmo: começa simples, identifica o que te irrita ou te atrasa, e busca uma solução. Aos poucos seu ambiente vai ficando com a sua cara.</p>
+            </div>
+            <a href="../../../../index.html" class="article-back">← Voltar para o início</a>
+        </article>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+</body>
+</html>

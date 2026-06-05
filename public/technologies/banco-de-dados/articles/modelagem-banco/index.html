@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelagem de banco de dados: o básico que funciona — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/main.css">
+    <link rel="stylesheet" href="../../../../assets/css/responsive.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="../../../../index.html" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="../../../../index.html" class="nav-link">← Voltar ao início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="article-page">
+        <article class="article-container">
+            <div class="article-header">
+                <span class="article-category">Banco de Dados</span>
+                <h1 class="article-title">Modelagem de banco de dados: o básico que funciona</h1>
+                <p class="article-meta">Por Maverick Dev • 5 de janeiro de 2025</p>
+            </div>
+            <div class="article-cover">Banco de Dados</div>
+            <div class="article-content">
+                <p>Modelagem de banco de dados era o tipo de matéria que eu achava chata até precisar criar um projeto de verdade. Quando tentei fazer um sistema de cadastro sem pensar na estrutura antes, virou um caos. Dados duplicados, tabelas que não faziam sentido, queries impossíveis. Aí entendi: modelar antes de criar é tão importante quanto planejar antes de construir uma casa.</p>
+
+                <p>Vou te mostrar os conceitos fundamentais com exemplos práticos. Nada de teoria abstrata demais — só o que você precisa pra começar a estruturar seus bancos de forma decente.</p>
+
+                <h2>Entidades e atributos</h2>
+
+                <p>Pensa no seu sistema. Quais são as "coisas" que ele precisa guardar? Cada "coisa" é uma entidade. Num sistema de escola, por exemplo:</p>
+
+                <ul>
+                    <li><strong>Aluno</strong> — nome, matrícula, email, data de nascimento</li>
+                    <li><strong>Professor</strong> — nome, especialidade, email</li>
+                    <li><strong>Disciplina</strong> — nome, carga horária, ementa</li>
+                    <li><strong>Turma</strong> — código, semestre, horário</li>
+                </ul>
+
+                <p>Cada entidade vira uma tabela no banco. Os atributos viram as colunas. Simples assim. Vamos criar a tabela de alunos em SQL:</p>
+
+<pre><code>CREATE TABLE alunos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    matricula VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    data_nascimento DATE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+
+                <h2>Chave primária (Primary Key)</h2>
+
+                <p>Toda tabela precisa de uma chave primária. É o campo que identifica cada registro de forma única. Geralmente é um <code>id</code> numérico que incrementa automaticamente:</p>
+
+                <ul>
+                    <li>Deve ser única (nunca se repete)</li>
+                    <li>Não pode ser nula</li>
+                    <li>Não deve mudar ao longo do tempo</li>
+                </ul>
+
+                <p>Pode usar o id numérico (INT AUTO_INCREMENT) ou UUID. Pra projetos iniciantes, o id numérico resolve bem e é mais fácil de trabalhar.</p>
+
+                <h2>Relacionamentos — a parte divertida</h2>
+
+                <p>Entidades raramente existem isoladas. Elas se conectam. E existem três tipos de relacionamento que você vai encontrar em 99% dos casos:</p>
+
+                <h2>Relacionamento 1:1 (Um para Um)</h2>
+
+                <p>Cada registro de uma tabela se relaciona com no máximo um registro da outra. Exemplo: cada aluno tem um endereço, e cada endereço pertence a um aluno só.</p>
+
+<pre><code>CREATE TABLE enderecos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT UNIQUE NOT NULL,
+    rua VARCHAR(200),
+    cidade VARCHAR(100),
+    estado CHAR(2),
+    cep VARCHAR(9),
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+);</code></pre>
+
+                <p>O <code>UNIQUE</code> no aluno_id garante que um aluno não tenha dois endereços. Na prática, relacionamentos 1:1 são os menos comuns. Muitas vezes faz sentido colocar tudo na mesma tabela.</p>
+
+                <h2>Relacionamento 1:N (Um para Muitos)</h2>
+
+                <p>Esse é o mais comum. Um professor leciona várias disciplinas, mas cada disciplina tem um professor responsável:</p>
+
+<pre><code>CREATE TABLE professores (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    especialidade VARCHAR(100),
+    email VARCHAR(100) UNIQUE
+);
+
+CREATE TABLE disciplinas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    carga_horaria INT NOT NULL,
+    professor_id INT,
+    FOREIGN KEY (professor_id) REFERENCES professores(id)
+);</code></pre>
+
+                <p>A chave estrangeira (FOREIGN KEY) fica na tabela do lado "muitos". A disciplina aponta pro professor, não o contrário. Esse é um erro comum no começo: colocar a FK no lado errado.</p>
+
+                <blockquote>Macete: pergunte "quem pertence a quem?". A disciplina pertence ao professor. Então a disciplina guarda o id do professor.</blockquote>
+
+                <h2>Relacionamento N:N (Muitos para Muitos)</h2>
+
+                <p>Aqui complica um pouquinho. Um aluno cursa várias disciplinas, e cada disciplina tem vários alunos. Não dá pra resolver com uma FK simples — precisa de uma tabela intermediária (tabela de junção):</p>
+
+<pre><code>CREATE TABLE matriculas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT NOT NULL,
+    disciplina_id INT NOT NULL,
+    semestre VARCHAR(6) NOT NULL,
+    nota DECIMAL(4,2),
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+    FOREIGN KEY (disciplina_id) REFERENCES disciplinas(id),
+    UNIQUE(aluno_id, disciplina_id, semestre)
+);</code></pre>
+
+                <p>A tabela <code>matriculas</code> conecta alunos e disciplinas. Cada linha representa "este aluno está matriculado nesta disciplina neste semestre". O UNIQUE composto impede que o mesmo aluno se matricule duas vezes na mesma disciplina no mesmo semestre.</p>
+
+                <p>A tabela de junção também pode ter seus próprios atributos (nota, data de matrícula, frequência). Isso é super útil na prática.</p>
+
+                <h2>Chave estrangeira (Foreign Key)</h2>
+
+                <p>A FK é o que cria o vínculo entre tabelas. Ela diz: "o valor nesta coluna deve existir como chave primária na outra tabela". Isso garante integridade referencial — você não consegue matricular um aluno que não existe.</p>
+
+<pre><code>-- Isso vai dar erro se o aluno 999 não existir:
+INSERT INTO matriculas (aluno_id, disciplina_id, semestre)
+VALUES (999, 1, '2024.1');</code></pre>
+
+                <p>E quando deletar um professor? O que acontece com as disciplinas dele? Aí entram as regras de cascata:</p>
+
+<pre><code>-- ON DELETE CASCADE: apaga as disciplinas junto
+-- ON DELETE SET NULL: coloca NULL no professor_id
+-- ON DELETE RESTRICT: impede de deletar o professor (padrão)
+
+FOREIGN KEY (professor_id) REFERENCES professores(id)
+    ON DELETE SET NULL</code></pre>
+
+                <h2>Normalização: organizando sem exagerar</h2>
+
+                <p>Normalização é o processo de organizar as tabelas pra evitar redundância. Sem entrar na teoria pesada, as três primeiras formas normais resolvem a maioria dos problemas:</p>
+
+                <p><strong>1ª Forma Normal (1FN):</strong> cada coluna deve ter um valor atômico (indivisível). Nada de guardar "João, Maria, Pedro" numa coluna só.</p>
+
+<pre><code>-- ERRADO ❌
+| id | nome  | telefones          |
+|----|-------|-------------------|
+| 1  | João  | 99999, 88888      |
+
+-- CERTO ✓ (tabela separada)
+CREATE TABLE telefones (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT NOT NULL,
+    numero VARCHAR(15) NOT NULL,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+);</code></pre>
+
+                <p><strong>2ª Forma Normal (2FN):</strong> todo atributo não-chave deve depender da chave primária inteira. Em tabelas com chave composta, não pode ter coluna que depende só de parte da chave.</p>
+
+                <p><strong>3ª Forma Normal (3FN):</strong> não pode ter dependência transitiva. Se A determina B e B determina C, então C não deve estar na mesma tabela que A. Na prática: se o CEP determina a cidade e o estado, separa em outra tabela.</p>
+
+                <blockquote>Na real: normaliza até a 3FN e tá bom pra 90% dos projetos. Desnormalização às vezes é necessária por performance, mas no começo foca em organizar direito.</blockquote>
+
+                <h2>Exemplo completo: mini sistema de escola</h2>
+
+<pre><code>-- Esquema completo
+CREATE TABLE alunos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    matricula VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(100)
+);
+
+CREATE TABLE professores (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE
+);
+
+CREATE TABLE disciplinas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    carga_horaria INT NOT NULL,
+    professor_id INT,
+    FOREIGN KEY (professor_id) REFERENCES professores(id)
+);
+
+CREATE TABLE matriculas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT NOT NULL,
+    disciplina_id INT NOT NULL,
+    semestre VARCHAR(6) NOT NULL,
+    nota DECIMAL(4,2),
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+    FOREIGN KEY (disciplina_id) REFERENCES disciplinas(id)
+);
+
+-- Consulta: alunos e suas disciplinas
+SELECT a.nome AS aluno, d.nome AS disciplina, m.nota
+FROM matriculas m
+JOIN alunos a ON m.aluno_id = a.id
+JOIN disciplinas d ON m.disciplina_id = d.id
+WHERE m.semestre = '2024.1'
+ORDER BY a.nome;</code></pre>
+
+                <h2>Dicas finais</h2>
+
+                <ul>
+                    <li><strong>Desenha antes:</strong> pega papel ou usa ferramentas como dbdiagram.io. Visualizar os relacionamentos antes de escrever SQL economiza muito retrabalho.</li>
+                    <li><strong>Nomes no plural ou singular?</strong> Eu uso plural pras tabelas (alunos, disciplinas) e singular pro que é referência (aluno_id). Mas o importante é ser consistente.</li>
+                    <li><strong>Sempre tenha um id:</strong> mesmo que pareça desnecessário, ter um id numérico como PK facilita joins e referências.</li>
+                    <li><strong>Pense nas queries:</strong> quando estiver modelando, imagina quais perguntas o sistema vai fazer. "Quais alunos estão na disciplina X?" Se a estrutura não permite essa query facilmente, repensa o modelo.</li>
+                </ul>
+
+                <p>Modelagem é uma habilidade que melhora com prática. No meu primeiro projeto errei feio, no segundo errei menos, e agora já consigo pensar numa estrutura razoável antes de abrir o MySQL. Se você tá começando, pega um sistema simples (biblioteca, loja, escola) e tenta modelar. Vai errar, vai refazer — e é assim que aprende.</p>
+            </div>
+            <a href="../../../../index.html" class="article-back">← Voltar para o início</a>
+        </article>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+</body>
+</html>

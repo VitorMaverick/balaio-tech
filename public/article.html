@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando... — Balaio.tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">Balaio<span>.tech</span></a>
+            <nav class="nav"><ul class="nav-list"><li><a href="/" class="nav-link">← Voltar ao início</a></li></ul></nav>
+        </div>
+    </header>
+    <main class="article-page">
+        <article class="article-container" id="article-root">
+            <p style="text-align:center; padding: 80px 0; color: var(--text-secondary);">Carregando artigo...</p>
+        </article>
+    </main>
+    <footer class="footer"><div class="container footer-content"><p class="footer-copy">© 2024 Balaio.tech. Feito com café e ancestralidade.</p></div></footer>
+    <script>
+        // Aplicar tema salvo
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+
+        // Carregar artigo pelo slug da URL
+        (async () => {
+            const slug = window.location.pathname.split('/article/')[1];
+            if (!slug) return;
+            try {
+                const res = await fetch(`/api/articles/${slug}`);
+                if (!res.ok) throw new Error('Não encontrado');
+                const article = await res.json();
+                document.title = `${article.title} — Balaio.tech`;
+                const date = new Date(article.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+                document.getElementById('article-root').innerHTML = `
+                    <div class="article-header">
+                        <span class="article-category">${article.category_slug}</span>
+                        <h1 class="article-title">${article.title}</h1>
+                        <p class="article-meta">Por ${article.author} • ${date}</p>
+                    </div>
+                    <div class="article-cover">${(article.category_slug || '').toUpperCase()}</div>
+                    <div class="article-content">${article.content}</div>
+                    <a href="/" class="article-back">← Voltar para o início</a>
+                `;
+            } catch {
+                document.getElementById('article-root').innerHTML = '<p style="text-align:center;padding:80px 0;">Artigo não encontrado.</p>';
+            }
+        })();
+    </script>
+</body>
+</html>
