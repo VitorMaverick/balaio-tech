@@ -25,16 +25,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (emptyMessage) emptyMessage.hidden = true;
     articlesGrid.innerHTML = list.map(a => {
       const date = new Date(a.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      const imgHtml = a.thumbnail_url
+        ? `<div class="blog-card-img" style="padding:0;"><img src="${a.thumbnail_url}" alt="${a.title}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:var(--radius) var(--radius) 0 0;"></div>`
+        : `<div class="blog-card-img">${(a.category_slug || '').toUpperCase()}</div>`;
       return `
+      <a href="/article/${a.slug}" style="text-decoration:none;color:inherit;display:block;">
       <article class="blog-card">
-        <div class="blog-card-img">${(a.category_slug || '').toUpperCase()}</div>
+        ${imgHtml}
         <div class="blog-card-body">
           <span class="blog-card-meta">${date} • ${a.author}</span>
           <h3 class="blog-card-title">${a.title}</h3>
           <p class="blog-card-desc">${a.description || ''}</p>
-          <a href="/article/${a.slug}" class="blog-card-link">Ler mais →</a>
+          <span class="blog-card-link">Ler mais →</span>
         </div>
-      </article>`;
+      </article>
+      </a>`;
     }).join('');
   }
 

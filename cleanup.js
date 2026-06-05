@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 function cleanup() {
-  const db = new Database(path.join(__dirname, 'database.db'));
-  const uploadsDir = path.join(__dirname, 'public', 'uploads');
+  const db = new Database(process.env.DATABASE_PATH || path.join(__dirname, 'database.db'));
+  const uploadsDir = process.env.UPLOADS_PATH || path.join(__dirname, 'public', 'uploads');
   if (!fs.existsSync(uploadsDir)) { db.close(); return { removedDisk: 0, removedDb: 0, removedOrphan: 0 }; }
 
   const files = fs.readdirSync(uploadsDir);

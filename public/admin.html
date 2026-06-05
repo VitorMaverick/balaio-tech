@@ -68,6 +68,16 @@
                 <div class="form-group"><label>Slug</label><input id="f-slug" placeholder="meu-artigo"></div>
                 <div class="form-group"><label>Descrição</label><input id="f-desc"></div>
                 <div class="form-group"><label>Categoria</label><select id="f-cat"></select></div>
+                <div class="form-group">
+                    <label>Thumbnail (URL da imagem de capa)</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <input id="f-thumbnail" placeholder="https://... ou clique em uma imagem da galeria">
+                        <button type="button" class="btn-sm btn-edit" onclick="uploadThumbnail()">Upload</button>
+                        <button type="button" class="btn-sm" style="background:var(--border);color:var(--text-primary);" onclick="document.getElementById('f-thumbnail').value='';updateThumbnailPreview();">Limpar</button>
+                        <input type="file" id="thumbnail-upload" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+                    </div>
+                    <img id="f-thumbnail-preview" style="margin-top:8px;max-height:120px;border-radius:8px;display:none;">
+                </div>
                 <div class="form-group"><label>Conteúdo (HTML)</label>
                     <textarea id="f-content"></textarea>
                 </div>
@@ -137,7 +147,7 @@
 
         function showForm() { document.getElementById('article-form').classList.remove('hidden'); editingSlug = null; clearForm(); loadGallery(); }
         function hideForm() { document.getElementById('article-form').classList.add('hidden'); editingSlug = null; }
-        function clearForm() { ['f-title','f-slug','f-desc','f-content'].forEach(id => document.getElementById(id).value = ''); }
+        function clearForm() { ['f-title','f-slug','f-desc','f-content','f-thumbnail'].forEach(id => document.getElementById(id).value = ''); updateThumbnailPreview(); }
 
         async function editArticle(slug) {
             const a = await (await fetch(`/api/articles/${slug}`)).json();
@@ -145,6 +155,8 @@
             document.getElementById('f-slug').value = a.slug;
             document.getElementById('f-desc').value = a.description || '';
             document.getElementById('f-cat').value = a.category_slug;
+            document.getElementById('f-thumbnail').value = a.thumbnail_url || '';
+            updateThumbnailPreview();
             document.getElementById('f-content').value = a.content;
             document.getElementById('article-form').classList.remove('hidden');
             editingSlug = slug;
@@ -152,7 +164,7 @@
         }
 
         async function saveArticle() {
-            const body = { title: document.getElementById('f-title').value, slug: document.getElementById('f-slug').value, description: document.getElementById('f-desc').value, category_slug: document.getElementById('f-cat').value, content: document.getElementById('f-content').value };
+            const body = { title: document.getElementById('f-title').value, slug: document.getElementById('f-slug').value, description: document.getElementById('f-desc').value, category_slug: document.getElementById('f-cat').value, thumbnail_url: document.getElementById('f-thumbnail').value || null, content: document.getElementById('f-content').value };
             const url = editingSlug ? `/api/articles/${editingSlug}` : '/api/articles';
             const method = editingSlug ? 'PUT' : 'POST';
             const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(body) });
@@ -206,6 +218,7 @@
                 <div style="position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--border);">
                     <img src="${img.url}" onclick="insertImage('${img.url}','${img.filename}')" style="width:100px;height:100px;object-fit:cover;display:block;cursor:pointer;" title="Clique para inserir">
                     <div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:2px;">
+                        <button onclick="setAsThumbnail('${img.url}')" style="flex:1;padding:3px;font-size:0.7rem;background:#f59e0b;color:#fff;border:none;cursor:pointer;">Capa</button>
                         <button onclick="insertImage('${img.url}','${img.filename}')" style="flex:1;padding:3px;font-size:0.7rem;background:#7c3aed;color:#fff;border:none;cursor:pointer;">Inserir</button>
                         <button onclick="deleteImage(${img.id},'${img.url}')" style="flex:1;padding:3px;font-size:0.7rem;background:#dc2626;color:#fff;border:none;cursor:pointer;">Excluir</button>
                     </div>
@@ -220,6 +233,35 @@
             textarea.focus();
             showMsg('Imagem inserida no conteúdo', 'ok');
         }
+
+        function setAsThumbnail(url) {
+            document.getElementById('f-thumbnail').value = url;
+            updateThumbnailPreview();
+            showMsg('Thumbnail definida', 'ok');
+        }
+
+        function updateThumbnailPreview() {
+            const img = document.getElementById('f-thumbnail-preview');
+            const url = document.getElementById('f-thumbnail').value;
+            if (url) { img.src = url; img.style.display = 'block'; }
+            else { img.style.display = 'none'; }
+        }
+        document.getElementById('f-thumbnail')?.addEventListener('input', updateThumbnailPreview);
+
+        function uploadThumbnail() { document.getElementById('thumbnail-upload').click(); }
+        document.getElementById('thumbnail-upload').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('image', file);
+            const slug = document.getElementById('f-slug').value;
+            if (slug) formData.append('article_slug', slug);
+            const res = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+            const data = await res.json();
+            if (data.url) { document.getElementById('f-thumbnail').value = data.url; updateThumbnailPreview(); loadGallery(); showMsg('Thumbnail enviada', 'ok'); }
+            else { showMsg(data.error || 'Erro no upload', 'err'); }
+            e.target.value = '';
+        });
 
         async function deleteImage(id, url) {
             if (!confirm('Excluir esta imagem?')) return;
