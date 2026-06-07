@@ -59,6 +59,7 @@
                 <div style="display:flex;gap:8px;">
                     <button class="btn-sm" style="background:var(--border);color:var(--text-primary);" onclick="runCleanup()">🧹 Limpar órfãs</button>
                     <button class="btn btn-primary" onclick="showForm()">+ Novo artigo</button>
+                    <button class="btn-sm btn-danger" onclick="doLogout()">Sair</button>
                 </div>
             </div>
             <div id="msg-area"></div>
@@ -102,12 +103,28 @@
         let token = localStorage.getItem('admin_token') || '';
         let editingSlug = null;
 
+        function doLogout() {
+            token = '';
+            localStorage.removeItem('admin_token');
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+        }
+
+        async function authFetch(url, opts = {}) {
+            opts.headers = { ...opts.headers, Authorization: `Bearer ${token}` };
+            const res = await fetch(url, opts);
+            if (res.status === 401) { doLogout(); showMsg('Sessão expirada. Faça login novamente.', 'err'); throw new Error('unauthorized'); }
+            return res;
+        }
+
         // Auto-login se tem token
         if (token) checkToken();
 
         async function checkToken() {
-            const res = await fetch('/api/articles', { headers: { Authorization: `Bearer ${token}` } });
-            if (res.ok) showPanel(); else { token = ''; localStorage.removeItem('admin_token'); }
+            try {
+                const res = await fetch('/api/images', { headers: { Authorization: `Bearer ${token}` } });
+                if (res.ok) showPanel(); else doLogout();
+            } catch { doLogout(); }
         }
 
         async function doLogin() {
@@ -167,7 +184,7 @@
             const body = { title: document.getElementById('f-title').value, slug: document.getElementById('f-slug').value, description: document.getElementById('f-desc').value, category_slug: document.getElementById('f-cat').value, thumbnail_url: document.getElementById('f-thumbnail').value || null, content: document.getElementById('f-content').value };
             const url = editingSlug ? `/api/articles/${editingSlug}` : '/api/articles';
             const method = editingSlug ? 'PUT' : 'POST';
-            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(body) });
+            const res = await authFetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
             const data = await res.json();
             if (res.ok) { showMsg('Artigo salvo!', 'ok'); hideForm(); loadArticles(); }
             else { showMsg(data.error || 'Erro ao salvar', 'err'); }
@@ -175,20 +192,20 @@
 
         async function deleteArticle(slug) {
             if (!confirm('Excluir este artigo?')) return;
-            const res = await fetch(`/api/articles/${slug}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+            const res = await authFetch(`/api/articles/${slug}`, { method: 'DELETE' });
             if (res.ok) { showMsg('Artigo excluído', 'ok'); loadArticles(); }
             else { showMsg('Erro ao excluir', 'err'); }
         }
 
         async function runCleanup() {
-            const res = await fetch('/api/admin/cleanup', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+            const res = await authFetch('/api/admin/cleanup', { method: 'POST' });
             const data = await res.json();
             const total = (data.removedDisk || 0) + (data.removedDb || 0) + (data.removedOrphan || 0);
             showMsg(total > 0 ? `${total} imagens órfãs removidas` : 'Nenhuma imagem órfã encontrada', 'ok');
         }
 
         async function togglePublish(slug) {
-            const res = await fetch(`/api/articles/${slug}/toggle`, { method: 'PUT', headers: { Authorization: `Bearer ${token}` } });
+            const res = await authFetch(`/api/articles/${slug}/toggle`, { method: 'PUT' });
             if (res.ok) loadArticles();
             else showMsg('Erro ao alterar visibilidade', 'err');
         }
@@ -211,7 +228,7 @@
             let images = [];
             try {
                 const url = slug ? `/api/images?article_slug=${slug}` : '/api/images';
-                images = await (await fetch(url, { headers: { Authorization: `Bearer ${token}` } })).json();
+                images = await (await authFetch(url)).json();
             } catch {}
             gallery.innerHTML = images.length === 0 ? '<p style="color:var(--text-secondary);font-size:0.85rem;margin:8px;">Nenhuma imagem ainda.</p>' :
                 images.map(img => `
@@ -256,7 +273,7 @@
             formData.append('image', file);
             const slug = document.getElementById('f-slug').value;
             if (slug) formData.append('article_slug', slug);
-            const res = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+            const res = await authFetch('/api/upload', { method: 'POST', body: formData });
             const data = await res.json();
             if (data.url) { document.getElementById('f-thumbnail').value = data.url; updateThumbnailPreview(); loadGallery(); showMsg('Thumbnail enviada', 'ok'); }
             else { showMsg(data.error || 'Erro no upload', 'err'); }
@@ -265,7 +282,7 @@
 
         async function deleteImage(id, url) {
             if (!confirm('Excluir esta imagem?')) return;
-            const res = await fetch(`/api/images/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+            const res = await authFetch(`/api/images/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 // Remover tag <img> do textarea se existir
                 const textarea = document.getElementById('f-content');
@@ -285,7 +302,7 @@
             const slug = document.getElementById('f-slug').value;
             if (slug) formData.append('article_slug', slug);
             try {
-                const res = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+                const res = await authFetch('/api/upload', { method: 'POST', body: formData });
                 const data = await res.json();
                 if (data.url) {
                     insertImage(data.url, file.name);
