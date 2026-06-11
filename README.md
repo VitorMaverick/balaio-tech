@@ -12,9 +12,3 @@ Blog pessoal de um estudante de tecnologia compartilhando o que está aprendendo
 - `index.html` — página principal
 - `assets/` — CSS, JS, imagens
 - `technologies/` — artigos organizados por categoria
-
-## Como usar
-Abra `index.html` no navegador. Sem build, sem dependências, sem servidor.
-
-## Autor
-Maverick Dev — estudante de tecnologia aprendendo em público.
