@@ -192,3 +192,7 @@ npm run agent:advanced:loop
 ## Autor
 
 **Maverick Dev** — estudante de tecnologia aprendendo em público.
+## Estrutura
+- `index.html` — página principal
+- `assets/` — CSS, JS, imagens
+- `technologies/` — artigos organizados por categoria
