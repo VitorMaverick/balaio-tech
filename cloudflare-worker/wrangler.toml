@@ -1,0 +1,10 @@
+name = "balaio-thumbnail-worker"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[ai]
+binding = "AI"
+
+# Opcional: proteger o worker com um secret
+# [vars]
+# WORKER_SECRET = "seu-secret-aqui"

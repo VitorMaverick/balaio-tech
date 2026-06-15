@@ -4,3 +4,11 @@ database.db-wal
 database.db-shm
 .env
 .idea/
+.auto_backup/
+auto_changelog.md
+autonomous_actions.md
+autonomous_changelog.md
+autonomous_agent/state/
+autonomous_agent/backups/
+backups/
+logs/

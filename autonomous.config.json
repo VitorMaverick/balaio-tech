@@ -1,0 +1,33 @@
+{
+  "name": "balaio-tech",
+  "rootDir": ".",
+  "services": [
+    {
+      "name": "backend",
+      "command": "node server.js",
+      "cwd": ".",
+      "healthCheck": "http://localhost:3000/api/categories",
+      "logFile": "logs/backend.log"
+    }
+  ],
+  "tests": [
+    { "name": "GET /api/categories", "method": "GET", "url": "http://localhost:3000/api/categories", "expectStatus": 200 },
+    { "name": "GET /api/articles", "method": "GET", "url": "http://localhost:3000/api/articles", "expectStatus": 200 },
+    { "name": "GET /admin", "method": "GET", "url": "http://localhost:3000/admin", "expectStatus": 200 },
+    { "name": "POST /api/login (invalid)", "method": "POST", "url": "http://localhost:3000/api/login", "body": {"username":"x","password":"x"}, "expectStatus": 401 },
+    { "name": "POST /api/upload (no auth)", "method": "POST", "url": "http://localhost:3000/api/upload", "expectStatus": 401 }
+  ],
+  "knownIssues": [
+    { "pattern": "EADDRINUSE", "fix": "killPort", "port": 3000 },
+    { "pattern": "SQLITE_CANTOPEN", "fix": "ensureDir", "path": "." },
+    { "pattern": "Cannot find module", "fix": "npmInstall" },
+    { "pattern": "ENOENT.*uploads", "fix": "ensureDir", "path": "public/uploads" }
+  ],
+  "improvements": [
+    { "id": "lazy-loading", "name": "Add lazy loading to images", "type": "regex-replace", "files": ["public/*.html"], "search": "<img(?![^>]*loading=)([^>]*?)(\\/?>)", "replace": "<img loading=\"lazy\"$1$2" },
+    { "id": "sitemap", "name": "Generate sitemap.xml", "type": "script", "command": "node autonomous-improver.js --no-compress --dry-run" },
+    { "id": "compress", "name": "Compress uploaded images", "type": "script", "command": "node autonomous-improver.js --no-compress" }
+  ],
+  "backupDir": ".auto_backup",
+  "changelogFile": "autonomous_actions.md"
+}

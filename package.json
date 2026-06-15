@@ -7,14 +7,25 @@
     "dev": "node server.js",
     "seed": "node seed.js",
     "cleanup": "node cleanup.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "improve": "node autonomous-improver.js",
+    "improve:dry": "node autonomous-improver.js --dry-run",
+    "improve:loop": "node autonomous-improver.js --interval 3600",
+    "agent": "node auto-agent.js --config ./autonomous.config.json --once",
+    "agent:loop": "node auto-agent.js --config ./autonomous.config.json --interval 1800",
+    "agent:dry": "node auto-agent.js --config ./autonomous.config.json --once --dry-run",
+    "agent:advanced": "node autonomous_agent/agent.js --once",
+    "agent:advanced:loop": "node autonomous_agent/agent.js --interval 1800",
+    "agent:advanced:dry": "node autonomous_agent/agent.js --once --dry-run"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "11.7.0",
+    "compression": "^1.7.4",
     "express": "4.21.2",
     "jsonwebtoken": "9.0.2",
     "multer": "^1.4.5-lts.1",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "sharp": "^0.33.2"
   }
 }
