@@ -1,0 +1,37 @@
+{
+  "_comment": "Exemplo de configuração para udemy-free-deals (FastAPI + React)",
+  "name": "udemy-free-deals",
+  "rootDir": ".",
+  "services": [
+    {
+      "name": "backend",
+      "command": "cd backend && uvicorn app.main:app --port 8000",
+      "cwd": ".",
+      "healthCheck": "http://localhost:8000/api/stats",
+      "logFile": "logs/backend.log"
+    },
+    {
+      "name": "frontend",
+      "command": "cd frontend && npm run dev",
+      "cwd": ".",
+      "healthCheck": "http://localhost:5173",
+      "logFile": "logs/frontend.log"
+    }
+  ],
+  "tests": [
+    { "name": "GET /api/stats", "method": "GET", "url": "http://localhost:8000/api/stats", "expectStatus": 200 },
+    { "name": "GET /api/courses", "method": "GET", "url": "http://localhost:8000/api/courses?page=1", "expectStatus": 200 },
+    { "name": "GET /api/categories", "method": "GET", "url": "http://localhost:8000/api/categories", "expectStatus": 200 },
+    { "name": "POST /api/admin/login (invalid)", "method": "POST", "url": "http://localhost:8000/api/admin/login", "body": {"username":"x","password":"x"}, "expectStatus": 401 }
+  ],
+  "knownIssues": [
+    { "pattern": "EADDRINUSE|address already in use", "fix": "killPort", "port": 8000 },
+    { "pattern": "ModuleNotFoundError", "fix": "npmInstall" },
+    { "pattern": "OperationalError.*database", "fix": "ensureDir", "path": "backend" }
+  ],
+  "improvements": [
+    { "id": "compress-static", "name": "Gzip static assets", "type": "script", "command": "echo 'TODO: add gzip middleware'" }
+  ],
+  "backupDir": ".auto_backup",
+  "changelogFile": "autonomous_actions.md"
+}

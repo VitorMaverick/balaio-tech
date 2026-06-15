@@ -233,6 +233,23 @@ app.delete('/api/images/:id', authMiddleware, (req, res) => {
   res.json({ success: true });
 });
 
+// === GENERATE THUMBNAIL IA ===
+const { generateThumbnail } = require('./services/imageGenerator');
+
+app.post('/api/admin/generate-thumbnail', authMiddleware, async (req, res) => {
+  const { title, description } = req.body;
+  console.log('[generate-thumbnail] Request:', { title, description: description?.slice(0, 50) });
+  if (!title || !description) return res.status(400).json({ error: 'Título e descrição são obrigatórios' });
+  try {
+    const result = await generateThumbnail(title, description, uploadsPath);
+    console.log('[generate-thumbnail] Sucesso:', result);
+    res.json(result);
+  } catch (e) {
+    console.error('[generate-thumbnail] ERRO:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // === SPA-like routing para artigos ===
 app.get('/article/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'article.html'));

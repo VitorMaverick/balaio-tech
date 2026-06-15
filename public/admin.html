@@ -71,12 +71,14 @@
                 <div class="form-group"><label>Categoria</label><select id="f-cat"></select></div>
                 <div class="form-group">
                     <label>Thumbnail (URL da imagem de capa)</label>
-                    <div style="display:flex;gap:8px;align-items:center;">
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                         <input id="f-thumbnail" placeholder="https://... ou clique em uma imagem da galeria">
                         <button type="button" class="btn-sm btn-edit" onclick="uploadThumbnail()">Upload</button>
+                        <button type="button" id="btn-generate-ai" class="btn-sm" style="background:#7c3aed;color:#fff;" onclick="generateAiThumbnail()" disabled>🎨 Gerar com IA</button>
                         <button type="button" class="btn-sm" style="background:var(--border);color:var(--text-primary);" onclick="document.getElementById('f-thumbnail').value='';updateThumbnailPreview();">Limpar</button>
                         <input type="file" id="thumbnail-upload" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
                     </div>
+                    <span id="ai-gen-status" style="font-size:0.8rem;color:var(--text-secondary);margin-top:4px;display:block;"></span>
                     <img id="f-thumbnail-preview" style="margin-top:8px;max-height:120px;border-radius:8px;display:none;">
                 </div>
                 <div class="form-group"><label>Conteúdo (HTML)</label>
@@ -164,7 +166,7 @@
 
         function showForm() { document.getElementById('article-form').classList.remove('hidden'); editingSlug = null; clearForm(); loadGallery(); }
         function hideForm() { document.getElementById('article-form').classList.add('hidden'); editingSlug = null; }
-        function clearForm() { ['f-title','f-slug','f-desc','f-content','f-thumbnail'].forEach(id => document.getElementById(id).value = ''); updateThumbnailPreview(); }
+        function clearForm() { ['f-title','f-slug','f-desc','f-content','f-thumbnail'].forEach(id => document.getElementById(id).value = ''); updateThumbnailPreview(); updateAiButton(); }
 
         async function editArticle(slug) {
             const a = await (await fetch(`/api/articles/${slug}`)).json();
@@ -178,6 +180,7 @@
             document.getElementById('article-form').classList.remove('hidden');
             editingSlug = slug;
             loadGallery();
+            updateAiButton();
         }
 
         async function saveArticle() {
@@ -313,6 +316,48 @@
             e.target.value = '';
             setTimeout(() => status.textContent = '', 3000);
         });
+
+        // === GERAR THUMBNAIL COM IA ===
+        function updateAiButton() {
+            const title = document.getElementById('f-title').value.trim();
+            const desc = document.getElementById('f-desc').value.trim();
+            document.getElementById('btn-generate-ai').disabled = !(title && desc);
+        }
+        document.getElementById('f-title').addEventListener('input', updateAiButton);
+        document.getElementById('f-desc').addEventListener('input', updateAiButton);
+
+        async function generateAiThumbnail() {
+            const title = document.getElementById('f-title').value.trim();
+            const desc = document.getElementById('f-desc').value.trim();
+            if (!title || !desc) return;
+            const btn = document.getElementById('btn-generate-ai');
+            const status = document.getElementById('ai-gen-status');
+            btn.disabled = true;
+            btn.textContent = '⏳ Gerando...';
+            status.textContent = 'Aguarde ~30-60s enquanto a IA gera a imagem...';
+            try {
+                const res = await authFetch('/api/admin/generate-thumbnail', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description: desc })
+                });
+                const text = await res.text();
+                let data;
+                try { data = JSON.parse(text); } catch { data = { error: text || `Erro ${res.status}` }; }
+                if (res.ok && data.url) {
+                    document.getElementById('f-thumbnail').value = data.url;
+                    updateThumbnailPreview();
+                    showMsg('Thumbnail gerada com IA!', 'ok');
+                } else {
+                    showMsg(data.error || `Erro ${res.status}`, 'err');
+                }
+            } catch (e) {
+                if (e.message !== 'unauthorized') showMsg('Erro: ' + e.message, 'err');
+            }
+            status.textContent = '';
+            btn.textContent = '🎨 Gerar com IA';
+            updateAiButton();
+        }
     </script>
 </body>
 </html>
